@@ -91,7 +91,6 @@ function movePlayer(direction) {
     const boat = document.getElementById("fishingBoat");
     boat.style.left = `${boatPosition}%`;
     
-    // Cập nhật vị trí dây câu theo thuyền
     const line = document.getElementById("fishingLine");
     line.style.left = `calc(${boatPosition}% + 45px)`;
 }
@@ -102,8 +101,10 @@ function startGlobalTimer() {
         globalTimeLeft--;
         let mins = Math.floor(globalTimeLeft / 60);
         let secs = globalTimeLeft % 60;
-        document.getElementById("globalTimerDisplay.innerText") = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        document.getElementById("globalTimerDisplay").innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        const display = document.getElementById("globalTimerDisplay");
+        if (display) {
+            display.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
 
         if (globalTimeLeft <= 0) {
             clearInterval(globalTimerInterval);
@@ -115,20 +116,22 @@ function startGlobalTimer() {
 function endGameByTime() {
     document.getElementById("gameScreen").classList.add("hidden");
     const modal = document.getElementById("gameOverModal");
-    modal.classList.remove("hidden");
-    modal.classList.add("flex");
+    if (modal) {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
 
-    const podium = document.getElementById("podiumList");
-    podium.innerHTML = "";
-    const sorted = Object.entries(localScores).sort((a, b) => b[1] - a[1]).slice(0, 3);
+        const podium = document.getElementById("podiumList");
+        podium.innerHTML = "";
+        const sorted = Object.entries(localScores).sort((a, b) => b[1] - a[1]).slice(0, 3);
 
-    sorted.forEach(([name, score], idx) => {
-        const medals = ["🥇", "🥈", "🥉"];
-        const div = document.createElement("div");
-        div.className = "flex justify-between items-center bg-white p-3.5 rounded-2xl shadow border-2 border-yellow-300 text-xl font-bold";
-        div.innerHTML = `<span>${medals[idx]} ${name}</span> <span class="text-amber-700">${score} điểm</span>`;
-        podium.appendChild(div);
-    });
+        sorted.forEach(([name, score], idx) => {
+            const medals = ["🥇", "🥈", "🥉"];
+            const div = document.createElement("div");
+            div.className = "flex justify-between items-center bg-white p-3.5 rounded-2xl shadow border-2 border-yellow-300 text-xl font-bold";
+            div.innerHTML = `<span>${medals[idx]} ${name}</span> <span class="text-amber-700">${score} điểm</span>`;
+            podium.appendChild(div);
+        });
+    }
 }
 
 // --- THẢ CÂU & CÂU HỎI ĐA DẠNG ---
@@ -206,11 +209,13 @@ function showQuestionModal() {
 
 function startTimer() {
     timeLeft = 15;
-    document.getElementById("timerDisplay").innerText = `${timeLeft}s`;
+    const timerDisplay = document.getElementById("timerDisplay");
+    if (timerDisplay) timerDisplay.innerText = `${timeLeft}s`;
+
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         timeLeft--;
-        document.getElementById("timerDisplay").innerText = `${timeLeft}s`;
+        if (timerDisplay) timerDisplay.innerText = `${timeLeft}s`;
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             closeModal();
@@ -311,7 +316,7 @@ function sendChatMessage() {
 function triggerGiantFishEffect(fishName) {
     confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
     const banner = document.createElement("div");
-    banner.className = "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-500 to-red-600 text-white p-6 rounded-3xl font-black text-2xl z-100 shadow-2xl animate-bounce";
+    banner.className = "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-500 to-red-600 text-white p-6 rounded-3xl font-black text-2xl z-50 shadow-2xl animate-bounce text-center";
     banner.innerHTML = `🔥 CÂU ĐƯỢC CÁ KHỔNG LỒ!<br><span class="text-yellow-200 text-3xl">${fishName}</span>`;
     document.body.appendChild(banner);
     setTimeout(() => banner.remove(), 1500);
@@ -396,7 +401,7 @@ function openAquarium() {
 
 function closeAquarium() { document.getElementById("aquariumModal").classList.add("hidden"); }
 
-// Đọc file CSV (Hỗ trợ thêm cột loại câu hỏi type: multiple, boolean, fill)
+// Đọc file CSV
 function handleFileUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
