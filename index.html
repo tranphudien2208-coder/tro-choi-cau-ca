@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ÔN TẬP CÂU CÁ PRO - PHIÊN BẢN MỚI</title>
+    <title>ÔN TẬP CÂU CÁ PRO - PHIÊN BẢN NÂNG CẤP</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts & FontAwesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Thư viện hiệu ứng Particle nhẹ -->
+    <!-- Thư viện hiệu ứng Particle / Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.12.0/tsparticles.confetti.bundle.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -23,7 +23,10 @@
                 <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">CÂU CÁ <span class="text-yellow-300">PRO</span></h1>
             </div>
             <div id="userInfo" class="hidden flex items-center gap-4 bg-sky-800 px-5 py-2.5 rounded-full shadow-inner border border-sky-700">
-                <span class="font-semibold text-2xl text-yellow-100" id="displayPlayerName">Học sinh</span>
+                <div class="flex items-center gap-2">
+                    <span id="displayAvatar" class="text-3xl">🥷</span>
+                    <span class="font-semibold text-2xl text-yellow-100" id="displayPlayerName">Học sinh</span>
+                </div>
                 <span class="bg-yellow-400 text-sky-950 px-4 py-1 rounded-full font-bold text-3xl shadow" id="displayScore">0đ</span>
                 <button onclick="openAquarium()" class="hover:text-yellow-300 transition-transform hover:scale-110" title="Bể cá của tôi">
                     <i class="fa-solid fa-bucket text-3xl"></i>
@@ -35,43 +38,54 @@
     <!-- Main Container -->
     <main class="max-w-6xl mx-auto w-full p-6 flex-grow flex flex-col">
 
-        <!-- Screen 1: Đăng nhập & Tải câu hỏi -->
-        <div id="loginScreen" class="bg-white rounded-3xl shadow-2xl p-10 md:p-14 text-center max-w-2xl mx-auto w-full border-4 border-sky-200 mt-10">
-            <div class="text-sky-600 text-7xl mb-5">
-                <i class="fa-solid fa-cloud-sun-rain animate-pulse"></i>
+        <!-- Screen 1: Đăng nhập & Chọn nhân vật -->
+        <div id="loginScreen" class="bg-white rounded-3xl shadow-2xl p-10 md:p-14 text-center max-w-2xl mx-auto w-full border-4 border-sky-200 mt-6">
+            <div class="text-sky-600 text-7xl mb-3">
+                <i class="fa-solid fa-gamepad animate-pulse"></i>
             </div>
-            <h2 class="text-4xl md:text-5xl font-extrabold text-sky-950 mb-4">Chào Mừng Em Đến Với Đại Dương!</h2>
-            <p class="text-xl text-gray-600 mb-10">Nhập tên của em để bắt đầu cuộc phiêu lưu câu cá và học tập.</p>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-sky-950 mb-3">Chọn Nhân Vật & Vào Game!</h2>
+            <p class="text-lg text-gray-600 mb-6">Nhập tên, chọn nhân vật yêu thích và môn học để bắt đầu câu cá.</p>
 
-            <form id="loginForm" onsubmit="startGame(event)" class="space-y-6">
+            <form id="loginForm" onsubmit="startGame(event)" class="space-y-6 text-left">
                 <div>
-                    <input type="text" id="playerNameInput" required placeholder="Nhập Họ và Tên của em..." 
-                        class="w-full px-6 py-5 border-4 border-sky-300 rounded-2xl focus:outline-none focus:border-yellow-400 text-center text-3xl font-semibold text-gray-800 shadow-inner bg-sky-50 transition">
+                    <label class="block text-sm font-bold text-sky-700 mb-1 ml-1 uppercase">1. Chọn Nhân Vật Của Em:</label>
+                    <div class="grid grid-cols-4 gap-3" id="avatarSelection">
+                        <div onclick="selectAvatar('🥷', this)" class="avatar-card selected p-4 rounded-2xl border-4 border-sky-400 bg-sky-50 flex flex-col items-center cursor-pointer text-4xl hover:scale-105 transition">🥷<span class="text-xs font-bold mt-1 text-sky-900">Ninja</span></div>
+                        <div onclick="selectAvatar('👦', this)" class="avatar-card p-4 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-4xl hover:scale-105 transition">👦<span class="text-xs font-bold mt-1 text-gray-700">Nam sinh</span></div>
+                        <div onclick="selectAvatar('👧', this)" class="avatar-card p-4 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-4xl hover:scale-105 transition">👧<span class="text-xs font-bold mt-1 text-gray-700">Nữ sinh</span></div>
+                        <div onclick="selectAvatar('🧙‍♂️', this)" class="avatar-card p-4 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-4xl hover:scale-105 transition">🧙‍♂️<span class="text-xs font-bold mt-1 text-gray-700">Phù thủy</span></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-sky-700 mb-1 ml-1 uppercase">2. Nhập Tên Của Em:</label>
+                    <input type="text" id="playerNameInput" required placeholder="Ví dụ: Nguyễn Văn A..." 
+                        class="w-full px-6 py-4 border-4 border-sky-300 rounded-2xl focus:outline-none focus:border-yellow-400 text-2xl font-semibold text-gray-800 shadow-inner bg-sky-50 transition">
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-left text-sm font-bold text-sky-700 mb-1 ml-1 uppercase">Chọn Môn Học:</label>
-                        <select id="subjectSelect" class="w-full px-5 py-4 border-4 border-sky-200 rounded-2xl focus:outline-none focus:border-yellow-400 font-semibold text-gray-700 text-xl bg-white transition">
+                        <label class="block text-sm font-bold text-sky-700 mb-1 ml-1 uppercase">3. Chọn Môn Học:</label>
+                        <select id="subjectSelect" class="w-full px-5 py-3.5 border-4 border-sky-200 rounded-2xl focus:outline-none focus:border-yellow-400 font-semibold text-gray-700 text-lg bg-white transition">
                             <option value="all">Tất cả môn học</option>
                             <option value="tinhoc">Tin học Lớp 9/10</option>
                             <option value="math">Toán học vui</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-left text-sm font-bold text-sky-700 mb-1 ml-1 uppercase">Thầy cô tải câu hỏi (.csv):</label>
+                        <label class="block text-sm font-bold text-sky-700 mb-1 ml-1 uppercase">4. Tải file câu hỏi (.csv):</label>
                         <div class="relative">
                             <input type="file" id="excelFileExcel" accept=".csv" onchange="handleFileUpload(event)"
                                 class="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full">
-                            <div class="w-full px-5 py-4 border-4 border-sky-200 border-dashed rounded-2xl bg-white font-semibold text-gray-500 text-center text-xl flex items-center justify-center gap-2 hover:bg-sky-50 hover:border-sky-300 transition">
-                                <i class="fa-solid fa-file-csv text-2xl text-green-500"></i>
+                            <div class="w-full px-5 py-3.5 border-4 border-sky-200 border-dashed rounded-2xl bg-white font-semibold text-gray-500 text-center text-lg flex items-center justify-center gap-2 hover:bg-sky-50 transition">
+                                <i class="fa-solid fa-file-csv text-xl text-green-500"></i>
                                 <span id="fileNameDisplay">Tải file...</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-300 text-sky-950 font-extrabold py-5 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-1 active:scale-95 text-3xl">
+                <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-300 text-sky-950 font-extrabold py-5 px-8 rounded-2xl shadow-xl transition transform hover:-translate-y-1 active:scale-95 text-3xl text-center">
                     <i class="fa-solid fa-anchor mr-3"></i> RA KHƠI CÂU CÁ!
                 </button>
             </form>
@@ -80,31 +94,26 @@
         <!-- Screen 2: Game chính -->
         <div id="gameScreen" class="hidden flex-col gap-6">
 
-            <!-- Khu vực Đại dương & Hoạt họa -->
+            <!-- Khu vực Đại dương -->
             <div id="oceanArea" class="relative bg-gradient-to-b from-sky-300 via-teal-400 to-blue-700 rounded-3xl h-96 md:h-[420px] shadow-2xl overflow-hidden border-8 border-white">
-                
-                <!-- Sóng và Mây -->
                 <div class="ocean-wave w-wave-1"></div>
                 <div class="ocean-wave w-wave-2"></div>
                 <div class="cloud cloud-1"></div>
                 <div class="cloud cloud-2"></div>
-                <div class="cloud cloud-3"></div>
 
-                <!-- Thuyền & Cầu cảng (đẹp hơn) -->
+                <!-- Thuyền & Nhân vật -->
                 <div class="absolute top-10 left-12 md:left-24 z-20 transition-transform duration-500" id="fishingBoat">
                     <div class="flex flex-col items-center">
-                        <i class="fa-solid fa-person-arrow-down text-6xl text-amber-950/80"></i>
+                        <span id="boatAvatar" class="text-6xl drop-shadow-md">🥷</span>
                         <div class="bg-amber-800 w-24 h-4 rounded-full shadow-lg border-2 border-amber-900"></div>
                         <div class="bg-amber-900/60 w-16 h-20 rounded-md -mt-1 shadow"></div>
                     </div>
-                    <!-- Phao câu cá -->
-                    <div id="bobber" class="absolute left-[35px] top-[150px] bg-red-600 w-6 h-6 rounded-full border-4 border-white shadow-xl hidden"></div>
                 </div>
 
-                <!-- Dây câu (Màu vàng sáng) -->
+                <!-- Dây câu -->
                 <div id="fishingLine" class="fishing-line-new"></div>
 
-                <!-- Các loài cá bơi lội dưới biển (Particle) -->
+                <!-- Cá Particle dưới biển -->
                 <div id="fishSwimGroup" class="absolute inset-0 z-10 opacity-60"></div>
 
                 <!-- Nút thả câu -->
@@ -117,7 +126,6 @@
 
             <!-- Bảng Hoạt Động & Xếp Hạng -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Nhật ký trực tuyến -->
                 <div class="bg-sky-950 text-white rounded-2xl p-6 shadow-xl border-4 border-sky-800">
                     <h3 class="text-yellow-300 font-bold text-2xl mb-4 flex items-center gap-3 uppercase">
                         <i class="fa-solid fa-tower-broadcast text-green-400 animate-pulse"></i> Hoạt động của lớp
@@ -127,32 +135,33 @@
                     </div>
                 </div>
 
-                <!-- Bảng xếp hạng -->
                 <div class="bg-sky-950 text-white rounded-2xl p-6 shadow-xl border-4 border-sky-800">
                     <h3 class="text-yellow-300 font-bold text-2xl mb-4 flex items-center gap-3 uppercase">
                         <i class="fa-solid fa-award text-yellow-500"></i> Bảng Vàng Vinh Danh
                     </h3>
-                    <div id="leaderboard" class="space-y-2 h-48 overflow-y-auto text-xl">
-                        <!-- JS load -->
-                    </div>
+                    <div id="leaderboard" class="space-y-2 h-48 overflow-y-auto text-xl"></div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modal 1: Câu Hỏi (Cỡ chữ TO NHẤT, Hiệu ứng màu nền) -->
+    <!-- Modal 1: Câu Hỏi & Đồng Hồ Đếm Ngược -->
     <div id="questionModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-5">
-        <div id="modalContent" class="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-3xl border-8 border-yellow-400 transform transition-all duration-300 scale-95 opacity-0">
-            <div class="flex justify-between items-center mb-6">
+        <div id="modalContent" class="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-3xl border-8 border-yellow-400 transform transition-all duration-300 scale-95 opacity-0 relative">
+            
+            <!-- Thanh đồng hồ đếm ngược -->
+            <div class="absolute top-4 right-6 flex items-center gap-2 bg-red-100 px-4 py-2 rounded-full border-2 border-red-400">
+                <i class="fa-solid fa-stopwatch text-red-600 text-xl animate-spin"></i>
+                <span id="timerDisplay" class="font-extrabold text-red-600 text-2xl">15s</span>
+            </div>
+
+            <div class="flex justify-between items-center mb-4">
                 <span id="questionCategory" class="bg-sky-100 text-sky-900 text-sm font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">Môn học</span>
-                <span class="text-sm text-gray-400"><i class="fa-solid fa-headset"></i> Trả lời đúng để bắt cá!</span>
             </div>
             
-            <h3 id="questionText" class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-10 leading-snug">Câu hỏi ôn tập?</h3>
+            <h3 id="questionText" class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-8 leading-snug">Câu hỏi ôn tập?</h3>
 
-            <div id="answersContainer" class="space-y-5 mb-6">
-                <!-- Đáp án load JS -->
-            </div>
+            <div id="answersContainer" class="space-y-4 mb-4"></div>
         </div>
     </div>
 
@@ -161,24 +170,20 @@
         <div class="bg-white rounded-3xl max-w-xl w-full p-8 shadow-3xl border-8 border-sky-400">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-3xl font-bold text-sky-950"><i class="fa-solid fa-bucket text-yellow-500"></i> Bể Cá Của Tôi</h3>
-                <button onclick="closeAquarium()" class="text-gray-400 hover:text-red-500 hover:scale-110 transition"><i class="fa-solid fa-xmark text-3xl"></i></button>
+                <button onclick="closeAquarium()" class="text-gray-400 hover:text-red-500 text-3xl"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="aquariumList" class="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-[350px] overflow-y-auto p-1">
-                <!-- JS load -->
-            </div>
+            <div id="aquariumList" class="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-[350px] overflow-y-auto p-1"></div>
         </div>
     </div>
 
-    <!-- Hiệu ứng bay cá (Canvas ẩn) -->
+    <!-- Hiệu ứng đặc biệt câu được cá to / pháo hoa -->
     <div id="fishAnimationContainer" class="fixed inset-0 pointer-events-none z-50"></div>
 
     <footer class="text-center py-4 text-xs text-gray-400 mt-6">
-        TRÒ CHƠI HỌC TẬP © 2026 | Phiên bản Nâng cấp 2.0 | Cỡ chữ to
+        TRÒ CHƠI HỌC TẬP © 2026 | Phiên bản Nâng cấp 3.0 (Nhân vật & Thời gian)
     </footer>
 
-    <!-- Firebase SDK & Game JS -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <!-- Script -->
     <script src="script.js"></script>
 </body>
 </html>
