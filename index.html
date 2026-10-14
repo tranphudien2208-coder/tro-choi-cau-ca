@@ -3,244 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ÔN TẬP CÂU CÁ PRO - PHIÊN BẢN ĐỈNH CAO 4.0</title>
-    <!-- Tailwind CSS CDN -->
+    <title>ÔN TẬP CÂU CÁ PRO - PHIÊN BẢN HOÀN CHỈNH</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts & FontAwesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Thư viện Confetti -->
+    <!-- Confetti & Particle -->
     <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.12.0/tsparticles.confetti.bundle.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        :root { --text-scale: 1.25; }
+        body { font-size: calc(1rem * var(--text-scale)); font-family: 'Fredoka', sans-serif; }
+        button, input, select { font-size: calc(1.05rem * var(--text-scale)) !important; }
+        .avatar-card.selected { border-color: #0284c7 !important; background-color: #e0f2fe !important; transform: scale(1.05); }
+        .opt-btn { background: #f8fafc; border: 3px solid #e2e8f0; transition: all 0.2s; }
+        .opt-btn:hover { background: #e0f2fe; border-color: #7dd3fc; transform: translateX(8px); }
+        .ocean-wave {
+            position: absolute; bottom: -1px; left: 0; right: 0; height: 30px;
+            background: repeating-linear-gradient(-45deg, rgba(3, 105, 161, 0.4), rgba(3, 105, 161, 0.4) 15px, rgba(2, 132, 199, 0.4) 15px, rgba(2, 132, 199, 0.4) 30px);
+            animation: moveWaves 8s linear infinite; opacity: 0.7;
+        }
+        @keyframes moveWaves { 0% { transform: translateX(0); } 100% { transform: translateX(100px); } }
+        .fishing-line-new {
+            position: absolute; top: 75px; left: calc(20% + 45px); width: 3px; height: 0px;
+            background: repeating-linear-gradient(to bottom, #fbbf24, #f59e0b 5px);
+            transition: height 0.6s ease-out; border-radius: 3px; z-index: 25;
+        }
+        .fishing-line-new.active { height: 240px; }
+        .fish-particle { position: absolute; animation: swimP 10s ease-in-out infinite; }
+        @keyframes swimP {
+            0% { transform: translate(0) scaleX(1); }
+            50% { transform: translate(200px, 30px) scaleX(1); }
+            51% { transform: translate(200px, 30px) scaleX(-1); }
+            100% { transform: translate(0) scaleX(-1); }
+        }
+        .correct-answer-bg { animation: flashGreen 0.6s ease-out; }
+        .wrong-answer-bg { animation: flashRed 0.6s ease-out; }
+        @keyframes flashGreen { 0%, 100% { background-color: white; } 50% { background-color: #bbf7d0; border-color: #22c55e; } }
+        @keyframes flashRed { 0%, 100% { background-color: white; } 50% { background-color: #fecaca; border-color: #ef4444; } }
+        .flying-fish { position: fixed; font-size: 3.5rem; z-index: 60; transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
+    </style>
 </head>
-<body class="bg-blue-50 min-h-screen font-['Fredoka'] antialiased flex flex-col overflow-x-hidden">
+<body class="bg-blue-50 min-h-screen flex flex-col overflow-x-hidden">
 
-    <!-- Header / Navbar -->
+    <!-- Header -->
     <header class="bg-sky-950 text-white shadow-xl p-4 sticky top-0 z-40 border-b-4 border-yellow-400">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <i class="fa-solid fa-fish-fins text-yellow-300 text-4xl animate-bounce"></i>
-                <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">CÂU CÁ <span class="text-yellow-300">PRO 4.0</span></h1>
+                <h1 class="text-2xl md:text-3xl font-extrabold">CÂU CÁ <span class="text-yellow-300">PRO 4.0</span></h1>
             </div>
-            
-            <!-- Đồng hồ đếm ngược toàn cục 15 phút -->
-            <div id="globalTimer" class="hidden items-center gap-2 bg-red-600/90 px-4 py-1.5 rounded-full border-2 border-yellow-300 shadow-md">
+            <div id="globalTimer" class="hidden items-center gap-2 bg-red-600 px-4 py-1.5 rounded-full border-2 border-yellow-300 shadow-md">
                 <i class="fa-solid fa-stopwatch text-yellow-300 text-xl animate-pulse"></i>
                 <span id="globalTimerDisplay" class="font-extrabold text-white text-xl">15:00</span>
             </div>
-
-            <div id="userInfo" class="hidden flex items-center gap-3 bg-sky-800 px-4 py-2 rounded-full shadow-inner border border-sky-700">
-                <div class="flex items-center gap-2">
-                    <span id="displayAvatar" class="text-2xl">🥷</span>
-                    <span class="font-semibold text-xl text-yellow-100 hidden md:inline" id="displayPlayerName">Học sinh</span>
-                </div>
-                <span class="bg-yellow-400 text-sky-950 px-3 py-0.5 rounded-full font-bold text-2xl shadow" id="displayScore">0đ</span>
-                <button onclick="openAquarium()" class="hover:text-yellow-300 transition-transform hover:scale-110" title="Bể cá của tôi">
-                    <i class="fa-solid fa-bucket text-2xl"></i>
-                </button>
+            <div id="userInfo" class="hidden flex items-center gap-3 bg-sky-800 px-4 py-2 rounded-full border border-sky-700">
+                <span id="displayAvatar" class="text-2xl">🥷</span>
+                <span class="font-semibold text-xl text-yellow-100 hidden md:inline" id="displayPlayerName">Học sinh</span>
+                <span class="bg-yellow-400 text-sky-950 px-3 py-0.5 rounded-full font-bold text-2xl" id="displayScore">0đ</span>
+                <button onclick="openAquarium()" class="hover:text-yellow-300"><i class="fa-solid fa-bucket text-2xl"></i></button>
             </div>
         </div>
     </header>
 
-    <!-- Main Container -->
+    <!-- Main -->
     <main class="max-w-6xl mx-auto w-full p-4 flex-grow flex flex-col">
-
-        <!-- Screen 1: Đăng nhập -->
+        <!-- Đăng nhập -->
         <div id="loginScreen" class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center max-w-2xl mx-auto w-full border-4 border-sky-200 mt-4">
-            <div class="text-sky-600 text-6xl mb-2">
-                <i class="fa-solid fa-gamepad animate-pulse"></i>
-            </div>
-            <h2 class="text-3xl font-extrabold text-sky-950 mb-2">Chọn Nhân Vật & Vào Game!</h2>
-            <p class="text-md text-gray-600 mb-6">Thi đấu 15 phút, trả lời trắc nghiệm, đúng/sai, điền khuyết và nhận sự hỗ trợ từ AI.</p>
-
-            <form id="loginForm" onsubmit="startGame(event)" class="space-y-5 text-left">
+            <h2 class="text-3xl font-extrabold text-sky-950 mb-3">Chọn Nhân Vật & Vào Game!</h2>
+            <form onsubmit="startGame(event)" class="space-y-5 text-left">
                 <div>
-                    <label class="block text-sm font-bold text-sky-700 mb-1 ml-1 uppercase">1. Chọn Nhân Vật:</label>
-                    <div class="grid grid-cols-4 gap-3" id="avatarSelection">
-                        <div onclick="selectAvatar('🥷', this)" class="avatar-card selected p-3 rounded-2xl border-4 border-sky-400 bg-sky-50 flex flex-col items-center cursor-pointer text-3xl hover:scale-105 transition">🥷<span class="text-xs font-bold mt-1 text-sky-900">Ninja</span></div>
-                        <div onclick="selectAvatar('👦', this)" class="avatar-card p-3 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-3xl hover:scale-105 transition">👦<span class="text-xs font-bold mt-1 text-gray-700">Nam sinh</span></div>
-                        <div onclick="selectAvatar('👧', this)" class="avatar-card p-3 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-3xl hover:scale-105 transition">👧<span class="text-xs font-bold mt-1 text-gray-700">Nữ sinh</span></div>
-                        <div onclick="selectAvatar('🧙‍♂️', this)" class="avatar-card p-3 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-3xl hover:scale-105 transition">🧙‍♂️<span class="text-xs font-bold mt-1 text-gray-700">Phù thủy</span></div>
+                    <label class="block text-sm font-bold text-sky-700 mb-1">1. Chọn Nhân Vật:</label>
+                    <div class="grid grid-cols-4 gap-3">
+                        <div onclick="selectAvatar('🥷', this)" class="avatar-card selected p-3 rounded-2xl border-4 border-sky-400 bg-sky-50 flex flex-col items-center cursor-pointer text-3xl">🥷<span class="text-xs font-bold mt-1 text-sky-900">Ninja</span></div>
+                        <div onclick="selectAvatar('👦', this)" class="avatar-card p-3 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-3xl">👦<span class="text-xs font-bold mt-1 text-gray-700">Nam</span></div>
+                        <div onclick="selectAvatar('👧', this)" class="avatar-card p-3 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-3xl">👧<span class="text-xs font-bold mt-1 text-gray-700">Nữ</span></div>
+                        <div onclick="selectAvatar('🧙‍♂️', this)" class="avatar-card p-3 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-3xl">🧙‍♂️<span class="text-xs font-bold mt-1 text-gray-700">Phù thủy</span></div>
                     </div>
                 </div>
-
                 <div>
-                    <label class="block text-sm font-bold text-sky-700 mb-1 ml-1 uppercase">2. Nhập Tên:</label>
-                    <input type="text" id="playerNameInput" required placeholder="Họ và tên học sinh..." 
-                        class="w-full px-5 py-3.5 border-4 border-sky-300 rounded-2xl focus:outline-none focus:border-yellow-400 text-xl font-semibold text-gray-800 shadow-inner bg-sky-50">
+                    <label class="block text-sm font-bold text-sky-700 mb-1">2. Nhập Tên:</label>
+                    <input type="text" id="playerNameInput" required placeholder="Họ tên học sinh..." class="w-full px-5 py-3 border-4 border-sky-300 rounded-2xl text-xl font-semibold bg-sky-50">
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold text-sky-700 mb-1 ml-1 uppercase">3. Chọn Môn:</label>
-                        <select id="subjectSelect" class="w-full px-4 py-3 border-4 border-sky-200 rounded-2xl focus:outline-none font-semibold text-gray-700 text-lg bg-white">
-                            <option value="all">Tất cả môn học</option>
-                            <option value="tinhoc">Tin học Lớp 9/10</option>
-                            <option value="math">Toán học vui</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-sky-700 mb-1 ml-1 uppercase">4. Tải file câu hỏi (.csv):</label>
-                        <div class="relative">
-                            <input type="file" id="excelFileExcel" accept=".csv" onchange="handleFileUpload(event)"
-                                class="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full">
-                            <div class="w-full px-4 py-3 border-4 border-sky-200 border-dashed rounded-2xl bg-white font-semibold text-gray-500 text-center text-lg flex items-center justify-center gap-2 hover:bg-sky-50">
-                                <i class="fa-solid fa-file-csv text-xl text-green-500"></i>
-                                <span id="fileNameDisplay">Tải file...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-300 text-sky-950 font-extrabold py-4 px-8 rounded-2xl shadow-xl transition transform hover:-translate-y-1 active:scale-95 text-2xl text-center">
-                    <i class="fa-solid fa-anchor mr-2"></i> BẮT ĐẦU THI ĐẤU (15 PHÚT)
-                </button>
+                <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-300 text-sky-950 font-extrabold py-4 rounded-2xl shadow-xl text-2xl">BẮT ĐẦU THI ĐẤU (15 PHÚT)</button>
             </form>
         </div>
 
-        <!-- Screen 2: Game chính -->
+        <!-- Màn hình Game -->
         <div id="gameScreen" class="hidden flex-col gap-5">
-
-            <!-- Khu vực Đại dương & Di chuyển nhân vật -->
-            <div id="oceanArea" class="relative bg-gradient-to-b from-sky-300 via-teal-400 to-blue-700 rounded-3xl h-96 md:h-[400px] shadow-2xl overflow-hidden border-8 border-white">
-                <div class="ocean-wave w-wave-1"></div>
-                <div class="ocean-wave w-wave-2"></div>
-                <div class="cloud cloud-1"></div>
-                <div class="cloud cloud-2"></div>
-
-                <!-- Thuyền & Nhân vật (Có thể di chuyển trái/phải) -->
+            <div class="relative bg-gradient-to-b from-sky-300 via-teal-400 to-blue-700 rounded-3xl h-96 shadow-2xl overflow-hidden border-8 border-white">
+                <div class="ocean-wave"></div>
                 <div id="fishingBoat" class="absolute top-10 left-[20%] z-20 transition-all duration-200">
                     <div class="flex flex-col items-center">
-                        <span id="boatAvatar" class="text-6xl drop-shadow-md">🥷</span>
-                        <div class="bg-amber-800 w-24 h-4 rounded-full shadow-lg border-2 border-amber-900"></div>
-                        <div class="bg-amber-900/60 w-16 h-16 rounded-md -mt-1 shadow"></div>
+                        <span id="boatAvatar" class="text-6xl">🥷</span>
+                        <div class="bg-amber-800 w-24 h-4 rounded-full border-2 border-amber-900"></div>
+                        <div class="bg-amber-900/60 w-16 h-16 rounded-md -mt-1"></div>
                     </div>
                 </div>
-
-                <!-- Dây câu -->
                 <div id="fishingLine" class="fishing-line-new"></div>
-
-                <!-- Cá bơi dưới biển -->
                 <div id="fishSwimGroup" class="absolute inset-0 z-10 opacity-60"></div>
 
-                <!-- Nút điều khiển di chuyển nhân vật (Dành cho điện thoại hoặc máy tính) -->
+                <!-- Điều khiển di chuyển -->
                 <div class="absolute bottom-4 left-4 z-30 flex gap-2">
-                    <button onclick="movePlayer(-1)" class="bg-sky-800/80 hover:bg-sky-700 text-white font-bold w-14 h-14 rounded-full shadow-lg text-2xl border-2 border-white flex items-center justify-center active:scale-90"><i class="fa-solid fa-arrow-left"></i></button>
-                    <button onclick="movePlayer(1)" class="bg-sky-800/80 hover:bg-sky-700 text-white font-bold w-14 h-14 rounded-full shadow-lg text-2xl border-2 border-white flex items-center justify-center active:scale-90"><i class="fa-solid fa-arrow-right"></i></button>
+                    <button onclick="movePlayer(-1)" class="bg-sky-800 text-white font-bold w-12 h-12 rounded-full text-xl border-2 border-white flex items-center justify-center">◀</button>
+                    <button onclick="movePlayer(1)" class="bg-sky-800 text-white font-bold w-12 h-12 rounded-full text-xl border-2 border-white flex items-center justify-center">▶</button>
                 </div>
 
-                <!-- Nút thả câu -->
                 <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30">
-                    <button id="castBtn" onclick="castHook()" class="bg-red-500 hover:bg-red-400 text-white font-extrabold py-5 px-8 rounded-full shadow-3xl border-6 border-white/80 transition transform active:scale-90 text-3xl flex items-center gap-3">
-                        <i class="fa-solid fa-fish text-yellow-300 animate-pulse"></i> THẢ CÂU NGAY!
+                    <button id="castBtn" onclick="castHook()" class="bg-red-500 hover:bg-red-400 text-white font-extrabold py-4 px-8 rounded-full shadow-3xl border-6 border-white text-3xl flex items-center gap-3">
+                        <i class="fa-solid fa-fish text-yellow-300"></i> THẢ CÂU NGAY!
                     </button>
                 </div>
 
-                <!-- Nút bật Chatbot AI -->
                 <div class="absolute top-4 right-4 z-30">
-                    <button onclick="openChatbot()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 border-2 border-white text-lg transition transform hover:scale-105">
-                        <i class="fa-solid fa-robot text-yellow-300 text-2xl animate-spin"></i> Trợ Lý AI
-                    </button>
+                    <button onclick="openChatbot()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2 rounded-2xl shadow-xl border-2 border-white text-lg">🤖 Trợ Lý AI</button>
                 </div>
             </div>
 
-            <!-- Bảng Hoạt Động & Xếp Hạng -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="bg-sky-950 text-white rounded-2xl p-5 shadow-xl border-4 border-sky-800">
-                    <h3 class="text-yellow-300 font-bold text-xl mb-3 flex items-center gap-2 uppercase">
-                        <i class="fa-solid fa-tower-broadcast text-green-400 animate-pulse"></i> Hoạt động lớp học
-                    </h3>
-                    <div id="activityLog" class="space-y-2.5 h-40 overflow-y-auto text-base text-sky-200">
-                        <p class="text-sky-400 italic text-sm">Chưa có ai câu cá...</p>
-                    </div>
+                    <h3 class="text-yellow-300 font-bold text-xl mb-3">📢 Hoạt động lớp học</h3>
+                    <div id="activityLog" class="space-y-2 h-36 overflow-y-auto text-sm text-sky-200"></div>
                 </div>
-
                 <div class="bg-sky-950 text-white rounded-2xl p-5 shadow-xl border-4 border-sky-800">
-                    <h3 class="text-yellow-300 font-bold text-xl mb-3 flex items-center gap-2 uppercase">
-                        <i class="fa-solid fa-award text-yellow-500"></i> Bảng Vàng Xếp Hạng
-                    </h3>
-                    <div id="leaderboard" class="space-y-2 h-40 overflow-y-auto text-lg"></div>
+                    <h3 class="text-yellow-300 font-bold text-xl mb-3">🏆 Bảng Vàng Xếp Hạng</h3>
+                    <div id="leaderboard" class="space-y-2 h-36 overflow-y-auto text-base"></div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modal 1: Câu Hỏi (Trắc nghiệm, Đúng/Sai, Điền khuyết) -->
+    <!-- Modal Câu hỏi -->
     <div id="questionModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div id="modalContent" class="bg-white rounded-3xl max-w-2xl w-full p-7 shadow-3xl border-8 border-yellow-400 transform transition-all duration-300 scale-95 opacity-0 relative">
-            <div class="absolute top-4 right-6 flex items-center gap-2 bg-red-100 px-3 py-1.5 rounded-full border-2 border-red-400">
-                <i class="fa-solid fa-stopwatch text-red-600 text-lg"></i>
-                <span id="timerDisplay" class="font-extrabold text-red-600 text-xl">15s</span>
-            </div>
-
-            <div class="flex justify-between items-center mb-3">
-                <span id="questionTypeBadge" class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full uppercase">Loại câu hỏi</span>
-            </div>
-            
-            <h3 id="questionText" class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-6 leading-snug">Câu hỏi ôn tập?</h3>
-
-            <!-- Khu vực hiển thị đáp án (Tùy loại câu hỏi) -->
-            <div id="answersContainer" class="space-y-3 mb-4"></div>
+        <div id="modalContent" class="bg-white rounded-3xl max-w-xl w-full p-7 shadow-3xl border-8 border-yellow-400 relative">
+            <div class="absolute top-4 right-6 bg-red-100 px-3 py-1 rounded-full border-2 border-red-400 font-bold text-red-600 text-lg" id="timerDisplay">15s</div>
+            <h3 id="questionText" class="text-2xl font-extrabold text-gray-900 mb-6">Câu hỏi ôn tập?</h3>
+            <div id="answersContainer" class="space-y-3"></div>
         </div>
     </div>
 
-    <!-- Modal 2: Chatbot AI Trợ Lý Học Tập -->
-    <div id="chatbotModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-3xl border-4 border-purple-500 flex flex-col h-[500px]">
+    <!-- Modal Chatbot AI -->
+    <div id="chatbotModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-3xl border-4 border-purple-500 flex flex-col h-[450px]">
             <div class="flex justify-between items-center pb-3 border-b">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-robot text-purple-600 text-2xl"></i>
-                    <h3 class="text-xl font-bold text-purple-900">Trợ Lý AI Ôn Tập</h3>
-                </div>
-                <button onclick="closeChatbot()" class="text-gray-400 hover:text-red-500 text-2xl"><i class="fa-solid fa-xmark"></i></button>
+                <h3 class="text-xl font-bold text-purple-900">🤖 Trợ Lý AI Ôn Tập</h3>
+                <button onclick="closeChatbot()" class="text-gray-400 hover:text-red-500 text-2xl">&times;</button>
             </div>
-            
-            <div id="chatMessages" class="flex-grow overflow-y-auto p-3 space-y-3 text-sm my-2 bg-purple-50/50 rounded-2xl border border-purple-100">
-                <div class="bg-purple-600 text-white p-3 rounded-2xl rounded-tl-none max-w-[85%] shadow">
-                    👋 Chào em! Thầy cô đã tích hợp tôi để hỗ trợ em. Em cần hỏi gì về bài học, Tin học hay Toán học cứ nhắn cho tôi nhé!
-                </div>
+            <div id="chatMessages" class="flex-grow overflow-y-auto p-3 space-y-2 text-sm my-2 bg-purple-50 rounded-2xl">
+                <div class="bg-purple-600 text-white p-3 rounded-2xl max-w-[85%]">👋 Chào em! Em cần hỏi gì về bài học cứ nhắn cho tôi nhé!</div>
             </div>
-
             <div class="flex gap-2 pt-2 border-t">
-                <input type="text" id="chatInput" placeholder="Nhập câu hỏi cho AI..." 
-                    class="flex-grow px-4 py-2.5 border-2 border-purple-200 rounded-xl focus:outline-none focus:border-purple-500 text-sm">
-                <button onclick="sendChatMessage()" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-xl font-bold shadow transition"><i class="fa-solid fa-paper-plane"></i></button>
+                <input type="text" id="chatInput" placeholder="Nhập câu hỏi..." class="flex-grow px-4 py-2 border-2 border-purple-200 rounded-xl text-sm">
+                <button onclick="sendChatMessage()" class="bg-purple-600 text-white px-4 py-2 rounded-xl font-bold">Gửi</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal 3: Bể Cá Cá Nhân -->
-    <div id="aquariumModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-xl w-full p-7 shadow-3xl border-8 border-sky-400">
-            <div class="flex justify-between items-center mb-5">
-                <h3 class="text-2xl font-bold text-sky-950"><i class="fa-solid fa-bucket text-yellow-500"></i> Bể Cá Của Tôi</h3>
-                <button onclick="closeAquarium()" class="text-gray-400 hover:text-red-500 text-2xl"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="aquariumList" class="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[320px] overflow-y-auto p-1"></div>
+    <!-- Modal Bể cá -->
+    <div id="aquariumModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-3xl border-8 border-sky-400">
+            <div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-bold text-sky-950">🐠 Bể Cá Của Tôi</h3><button onclick="closeAquarium()" class="text-2xl">&times;</button></div>
+            <div id="aquariumList" class="grid grid-cols-3 gap-3 max-h-72 overflow-y-auto"></div>
         </div>
     </div>
 
-    <!-- Modal 4: Kết Thúc 15 Phút - Vinh Danh Top 3 -->
-    <div id="gameOverModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-gradient-to-b from-amber-100 to-yellow-50 rounded-3xl max-w-lg w-full p-8 shadow-3xl border-8 border-yellow-500 text-center">
-            <div class="text-yellow-600 text-6xl mb-2 animate-bounce"><i class="fa-solid fa-trophy"></i></div>
-            <h2 class="text-3xl font-black text-amber-900 mb-1">HẾT GIỜ THI ĐẤU (15 PHÚT)!</h2>
-            <p class="text-gray-600 mb-6 text-sm">Trò chơi đã kết thúc. Xin vinh danh 3 nhà vô địch xuất sắc nhất!</p>
-            
-            <div id="podiumList" class="space-y-3 mb-6"></div>
-
-            <button onclick="location.reload()" class="bg-yellow-500 hover:bg-yellow-400 text-amber-950 font-extrabold py-3.5 px-8 rounded-2xl shadow-xl text-xl">
-                <i class="fa-solid fa-rotate-right mr-2"></i> CHƠI LẠI TỪ ĐẦU
-            </button>
+    <!-- Modal Hết giờ -->
+    <div id="gameOverModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-yellow-50 rounded-3xl max-w-md w-full p-8 text-center border-8 border-yellow-500">
+            <h2 class="text-3xl font-black text-amber-900 mb-4">🏆 HẾT GIỜ THI ĐẤU!</h2>
+            <div id="podiumList" class="space-y-2 mb-6 text-lg font-bold"></div>
+            <button onclick="location.reload()" class="bg-yellow-500 text-amber-950 font-extrabold py-3 px-8 rounded-2xl text-xl">CHƠI LẠI</button>
         </div>
     </div>
 
     <div id="fishAnimationContainer" class="fixed inset-0 pointer-events-none z-50"></div>
 
-    <footer class="text-center py-3 text-xs text-gray-400 mt-4">
-        TRÒ CHƠI HỌC TẬP TỰ ĐỘNG © 2026 | Phiên bản Nâng cấp 4.0
-    </footer>
+    <!-- Script tích hợp gọn gàng -->
+    <script>
+        const questionBank = [
+            { question: "Trong Python, câu lệnh xuất dữ liệu là gì?", options: ["input()", "print()", "export()", "write()"], answer: 1 },
+            { question: "Kết quả: 15 + 5 * 2 = ?", options: ["40", "25", "30", "35"], answer: 1 },
+            { question: "Thiết bị nào là thiết bị vào (Input)?", options: ["Màn hình", "Máy in", "Bàn phím", "Loa"], answer: 2 }
+        ];
 
-    <script src="script.js"></script>
+        const fishTypes = [
+            { name: "Cá Chép Vàng", points: 10, icon: "fa-fish text-yellow-400", rare: false },
+            { name: "Cá Nemo", points: 15, icon: "fa-fish-fins text-orange-500", rare: false },
+            { name: "Cá Mập Săn Mồi", points: 50, icon: "fa-fish-fins text-slate-700", rare: true }
+        ];
+
+        let currentPlayer = { name: "", avatar: "🥷", score: 0, caughtFish: [] };
+        let currentQuestion = null;
+        let localScores = {};
+        let timerInterval = null, timeLeft = 15;
+        let globalTimeLeft = 15 * 60, globalTimerInterval = null;
+        let boatPosition = 20;
+
+        function selectAvatar(emoji, el) {
+            currentPlayer.avatar = emoji;
+            document.querySelectorAll(".avatar-card").forEach(c => c.classList.remove("selected", "border-sky-400", "bg-sky-50"));
+            el.classList.add("selected", "border-sky-400", "bg-sky-50");
+        }
+
+        function startGame(e) {
+            e.preventDefault();
+            const name = document.getElementById("playerNameInput").value.trim();
+            if (!name) return;
+            currentPlayer.name = name;
+            document.getElementById("loginScreen").classList.add("hidden");
+            document.getElementById("gameScreen").classList.remove("hidden");
+            document.getElementById("gameScreen").classList.add("flex");
+            document.getElementById("userInfo").classList.remove("hidden");
+            document.getElementById("userInfo").classList.add("flex");
+            document.getElementById("globalTimer").classList.remove("hidden");
+            document.getElementById("globalTimer").classList.add("flex");
+
+            document.getElementById("displayPlayerName").innerText = name;
+            document.getElementById("displayAvatar").innerText = currentPlayer.avatar;
+            document.getElementById("boatAvatar").innerText = currentPlayer.avatar;
+
+            updateScore();
+            addLeaderboard(name, 0);
+            startGlobalTimer();
+        }
+
+        function movePlayer(dir) {
+            boatPosition += dir * 8;
+            if (boatPosition < 5) boatPosition = 5;
+            if (boatPosition > 80) boatPosition = 80;
+            document.getElementById("fishingBoat").style.left = `${boatPosition}%`;
+            document.getElementById("fishingLine").style.left = `calc(${boatPosition}% + 45px)`;
+        }
+
+        function startGlobalTimer() {
+            globalTimerInterval = setInterval(() => {
+                globalTimeLeft--;
+                let m = Math.floor(globalTimeLeft / 60), s = globalTimeLeft % 60;
+                document.getElementById("globalTimerDisplay").innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                if (globalTimeLeft <= 0) { clearInterval(globalTimerInterval); showGameOver(); }
+            }, 1000);
+        }
+
+        function showGameOver() {
+            document.getElementById("gameScreen").classList.add("hidden");
+            document.getElementById("gameOverModal").classList.remove("hidden");
+            const podium = document.getElementById("podiumList");
+            podium.innerHTML = "";
+            Object.entries(localScores).sort((a,b)=>b[1]-a[1]).slice(0,3).forEach(([n,s],i)=>{
+                podium.innerHTML += `<div>🥇 #${i+1} ${n} - ${s} điểm</div>`;
+            });
+        }
+
+        function castHook() {
+            const line = document.getElementById("fishingLine");
+            const btn = document.getElementById("castBtn");
+            btn.disabled = true;
+            line.classList.add("active");
+
+            currentQuestion = questionBank[Math.floor(Math.random() * questionBank.length)];
+
+            setTimeout(() => {
+                line.classList.remove("active");
+                showQuestionModal();
+                btn.disabled = false;
+            }, 600);
+        }
+
+        function showQuestionModal() {
+            document.getElementById("questionText").innerText = currentQuestion.question;
+            const container = document.getElementById("answersContainer");
+            container.innerHTML = "";
+
+            currentQuestion.options.forEach((opt, idx) => {
+                const btn = document.createElement("button");
+                btn.className = "w-full opt-btn flex items-center p-3.5 rounded-2xl font-bold text-lg text-gray-800";
+                btn.innerHTML = `<div class="bg-sky-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">${String.fromCharCode(65+idx)}</div> ${opt}`;
+                btn.onclick = () => checkAnswer(idx, btn);
+                container.appendChild(btn);
+            });
+
+            document.getElementById("questionModal").classList.remove("hidden");
+            startTimer();
+        }
+
+        function startTimer() {
+            timeLeft = 15;
+            document.getElementById("timerDisplay").innerText = `${timeLeft}s`;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timerDisplay").innerText = `${timeLeft}s`;
+                if (timeLeft <= 0) { clearInterval(timerInterval); closeModal(); logActivity(`⏰ ${currentPlayer.name} hết giờ!`); }
+            }, 1000);
+        }
+
+        function checkAnswer(idx, btn) {
+            clearInterval(timerInterval);
+            const content = document.getElementById("modalContent");
+            if (idx === currentQuestion.answer) {
+                content.classList.add("correct-answer-bg");
+                const caught = fishTypes[Math.floor(Math.random()*fishTypes.length)];
+                currentPlayer.score += caught.points;
+                currentPlayer.caughtFish.push(caught);
+                updateScore();
+                logActivity(`🎉 ${currentPlayer.name} câu được ${caught.name} (+${caught.points}đ)!`);
+                addLeaderboard(currentPlayer.name, currentPlayer.score);
+                if(caught.rare) confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+            } else {
+                content.classList.add("wrong-answer-bg");
+                logActivity(`❌ ${currentPlayer.name} trả lời sai, cá sổng!`);
+            }
+            setTimeout(() => {
+                content.classList.remove("correct-answer-bg", "wrong-answer-bg");
+                closeModal();
+            }, 800);
+        }
+
+        function closeModal() {
+            clearInterval(timerInterval);
+            document.getElementById("questionModal").classList.add("hidden");
+        }
+
+        function updateScore() { document.getElementById("displayScore").innerText = `${currentPlayer.score}đ`; }
+        function logActivity(msg) {
+            const log = document.getElementById("activityLog");
+            log.innerHTML = `<div class="p-2 bg-sky-900 rounded">${msg}</div>` + log.innerHTML;
+        }
+        function addLeaderboard(name, score) {
+            localScores[name] = Math.max(localScores[name] || 0, score);
+            const board = document.getElementById("leaderboard");
+            board.innerHTML = "";
+            Object.entries(localScores).sort((a,b)=>b[1]-a[1]).forEach(([n,s],i)=>{
+                board.innerHTML += `<div class="flex justify-between p-1.5 bg-sky-900 rounded"><span>#${i+1} ${n}</span><b>${s}đ</b></div>`;
+            });
+        }
+        function openChatbot() { document.getElementById("chatbotModal").classList.remove("hidden"); }
+        function closeChatbot() { document.getElementById("chatbotModal").classList.add("hidden"); }
+        function sendChatMessage() {
+            const input = document.getElementById("chatInput");
+            if(!input.value.trim()) return;
+            document.getElementById("chatMessages").innerHTML += `<div class="bg-purple-100 p-2 rounded ml-auto max-w-[80%]">${input.value}</div>`;
+            input.value = "";
+            setTimeout(() => {
+                document.getElementById("chatMessages").innerHTML += `<div class="bg-purple-600 text-white p-2 rounded max-w-[80%]">🤖 Chúc em chơi vui và ôn tập thật tốt nhé!</div>`;
+            }, 600);
+        }
+        function openAquarium() {
+            const list = document.getElementById("aquariumList");
+            list.innerHTML = currentPlayer.caughtFish.length ? "" : "<p class='col-span-3 text-center text-gray-400'>Trống</p>";
+            currentPlayer.caughtFish.forEach(f => {
+                list.innerHTML += `<div class="p-2 bg-sky-50 rounded border text-center"><i class='fa-solid ${f.icon} text-3xl mb-1'></i><br><b>${f.name}</b></div>`;
+            });
+            document.getElementById("aquariumModal").classList.remove("hidden");
+        }
+        function closeAquarium() { document.getElementById("aquariumModal").classList.add("hidden"); }
+    </script>
 </body>
 </html>
