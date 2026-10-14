@@ -1,58 +1,111 @@
-/* Animation mây trôi */
-.cloud {
+:root {
+    --text-scale: 1.3; /* Tăng cỡ chữ toàn cục lên 30% */
+}
+
+body {
+    font-size: calc(1rem * var(--text-scale));
+}
+
+/* --- Hiệu ứng Nổi Neumorphism 3D cho Nút Bấm --- */
+button {
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+#loginForm input, #loginForm select, #modalContent button.opt-btn {
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05), 3px 3px 10px rgba(0,0,0,0.1);
+}
+
+#castBtn {
+    box-shadow: 0 10px 0 #b91c1c, 0 15px 20px rgba(0,0,0,0.3);
+}
+#castBtn:active {
+    box-shadow: 0 2px 0 #b91c1c, 0 5px 10px rgba(0,0,0,0.3);
+    transform: translate(-50%, 4px) scale(0.95);
+}
+
+/* --- Cỡ Chữ Nút và Input --- */
+button, input, select {
+    font-size: calc(1.1rem * var(--text-scale)) !important;
+}
+
+/* --- Giao diện Đáp Án Mới (Siêu To) --- */
+.opt-btn {
+    background: #f8fafc;
+    border: 3px solid #e2e8f0;
+    transition: all 0.2s ease-in-out;
+}
+.opt-btn:hover {
+    background: #e0f2fe;
+    border-color: #7dd3fc;
+    transform: translateX(10px);
+}
+.opt-btn-label {
+    font-size: calc(0.9rem * var(--text-scale)) !important;
+}
+.opt-btn-text {
+    font-size: calc(1.1rem * var(--text-scale)) !important;
+    font-weight: 700;
+}
+
+/* --- Hiệu ứng Biển Mới --- */
+.ocean-wave {
     position: absolute;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 50px;
+    bottom: -1px; left: 0; right: 0;
     height: 30px;
-    width: 90px;
-    animation: moveClouds 20s linear infinite;
+    background: repeating-linear-gradient(-45deg, rgba(3, 105, 161, 0.4), rgba(3, 105, 161, 0.4) 15px, rgba(2, 132, 199, 0.4) 15px, rgba(2, 132, 199, 0.4) 30px);
+    animation: moveWaves 8s linear infinite;
+    opacity: 0.7;
 }
-.cloud-1 { top: 15px; animation-duration: 25s; }
-.cloud-2 { top: 40px; animation-duration: 18s; animation-delay: -5s; }
+.w-wave-2 { bottom: 10px; animation-duration: 5s; opacity: 0.5; }
 
-@keyframes moveClouds {
-    0% { left: -100px; }
-    100% { left: 100%; }
+@keyframes moveWaves {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(100px); }
 }
 
-/* Animation cá bơi trong nước */
-.swimming-fish {
+/* Dây câu mới */
+.fishing-line-new {
     position: absolute;
-    animation: swim 12s ease-in-out infinite alternate;
+    top: 60px; left: 110px;
+    width: 3px; height: 0px;
+    background: repeating-linear-gradient(to bottom, #fbbf24, #f59e0b 5px);
+    transition: height 0.6s ease-out;
+    border-radius: 3px;
+    z-index: 25;
 }
-.fish-1 { top: 60%; left: 10%; animation-duration: 10s; }
-.fish-2 { top: 75%; left: 50%; animation-duration: 14s; }
-.fish-3 { top: 80%; left: 80%; animation-duration: 8s; }
+.fishing-line-new.active { height: 260px; }
 
-@keyframes swim {
-    0% { transform: translateX(0) scaleX(1); }
-    50% { transform: translateX(120px) scaleX(1); }
-    51% { transform: translateX(120px) scaleX(-1); }
-    100% { transform: translateX(0) scaleX(-1); }
-}
-
-/* Sóng biển ở đáy */
-.water-wave {
+/* Cá Particle */
+.fish-particle {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 15px;
-    background: repeating-linear-gradient(-45deg, #0284c7, #0284c7 10px, #0369a1 10px, #0369a1 20px);
-    opacity: 0.6;
+    font-size: 2xl;
+    animation: swimP 10s ease-in-out infinite;
+}
+@keyframes swimP {
+    0% { transform: translate(0) scaleX(1); }
+    50% { transform: translate(200px, 30px) scaleX(1); }
+    51% { transform: translate(200px, 30px) scaleX(-1); }
+    100% { transform: translate(0) scaleX(-1); }
 }
 
-/* Dây câu cá */
-.fishing-line {
-    position: absolute;
-    top: 70px;
-    left: 75px;
-    width: 2px;
-    height: 0px;
-    background-color: #fde047;
-    transition: height 0.8s ease-in-out;
-    z-index: 15;
+/* --- Hiệu ứng Màn Hình Thắng/Thua --- */
+.correct-answer-bg { animation: flashGreen 0.6s ease-out; }
+.wrong-answer-bg { animation: flashRed 0.6s ease-out; }
+
+@keyframes flashGreen {
+    0%, 100% { background-color: white; }
+    50% { background-color: #bbf7d0; border-color: #22c55e; }
 }
-.fishing-line.active {
-    height: 180px;
+@keyframes flashRed {
+    0%, 100% { background-color: white; }
+    50% { background-color: #fecaca; border-color: #ef4444; }
+}
+
+/* --- Hiệu ứng Cá Bay --- */
+.flying-fish {
+    position: fixed;
+    font-size: 4rem;
+    z-index: 60;
+    transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
 }
