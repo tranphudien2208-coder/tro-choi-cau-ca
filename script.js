@@ -1,57 +1,63 @@
-// --- BỘ CÂU HỎI MẪU ---
 const questionBank = [
-    { subject: "tinhoc", question: "Trong Python, câu lệnh print('Chào em') dùng để làm gì?", options: ["Nhập dữ liệu", "Xuất dữ liệu", "Lưu dữ liệu", "Xóa dữ liệu"], answer: 1 },
-    { subject: "math", question: "Kết quả của: 10 * 3 + 5 là bao nhiêu?", options: ["80", "35", "50", "40"], answer: 1 },
-    { subject: "science", question: "Loài vật nào được coi là 'Chúa tể sơn lâm'?", options: ["Voi", "Cá Mập", "Sư Tử", "Hổ"], answer: 3 }
+    { subject: "tinhoc", question: "Trong Python, câu lệnh print() dùng để làm gì?", options: ["Nhập dữ liệu", "Xuất dữ liệu", "Lưu dữ liệu", "Xóa dữ liệu"], answer: 1 },
+    { subject: "math", question: "Kết quả của phép tính: 10 * 3 + 5 là bao nhiêu?", options: ["80", "35", "50", "40"], answer: 1 },
+    { subject: "science", question: "Hành tinh nào gần Mặt Trời nhất?", options: ["Trái Đất", "Sao Hỏa", "Sao Thủy", "Sao Kim"], answer: 2 }
 ];
 
-// Danh sách cá mới (đẹp hơn)
+// Phân loại cá (Cá thường & Cá To/Hiếm đặc biệt)
 const fishTypes = [
     { name: "Cá Chép Vàng", points: 10, icon: "fa-fish text-yellow-400", rare: false },
     { name: "Cá Nemo", points: 15, icon: "fa-fish-fins text-orange-500", rare: false },
-    { name: "Cá Kiếm Lam", points: 25, icon: "fa-sword text-sky-600", rare: true },
-    { name: "Cá Mập Con", points: 50, icon: "fa-fish-fins text-slate-700", rare: true }
+    { name: "Cá Kiếm Khổng Lồ", points: 30, icon: "fa-fish text-sky-600", rare: true },
+    { name: "Cá Mập Săn Mồi", points: 50, icon: "fa-fish-fins text-slate-700", rare: true }
 ];
 
-let currentPlayer = { name: "", subject: "all", score: 0, caughtFish: [] };
+let currentPlayer = { name: "", avatar: "🥷", subject: "all", score: 0, caughtFish: [] };
 let currentQuestion = null;
 let localScores = {};
+let timerInterval = null;
+let timeLeft = 15;
 
-// --- KHỞI ĐỘNG ---
+function selectAvatar(emoji, element) {
+    currentPlayer.avatar = emoji;
+    document.querySelectorAll(".avatar-card").forEach(c => {
+        c.classList.remove("selected", "border-sky-400", "bg-sky-50");
+        c.classList.add("border-gray-200", "bg-white");
+    });
+    element.classList.add("selected", "border-sky-400", "bg-sky-50");
+    element.classList.remove("border-gray-200", "bg-white");
+}
+
 function startGame(e) {
     e.preventDefault();
     const nameInput = document.getElementById("playerNameInput").value.trim();
     if (!nameInput) return;
     currentPlayer.name = nameInput;
     currentPlayer.subject = document.getElementById("subjectSelect").value;
-    switchScreen("loginScreen", "gameScreen");
+    
+    document.getElementById("loginScreen").classList.add("hidden");
+    const gameScreen = document.getElementById("gameScreen");
+    gameScreen.classList.remove("hidden");
+    gameScreen.classList.add("flex");
+    
     document.getElementById("userInfo").classList.remove("hidden");
     document.getElementById("userInfo").classList.add("flex");
     document.getElementById("displayPlayerName").innerText = currentPlayer.name;
+    document.getElementById("displayAvatar").innerText = currentPlayer.avatar;
+    document.getElementById("boatAvatar").innerText = currentPlayer.avatar;
+
     updateScoreDisplay();
     addLeaderboardEntry(currentPlayer.name, 0);
-    // Bắt đầu particle cá bơi
     initFishParticles();
 }
 
-function switchScreen(hideId, showId) {
-    document.getElementById(hideId).classList.add("hidden");
-    const showEl = document.getElementById(showId);
-    showEl.classList.remove("hidden");
-    showEl.classList.add("flex");
-}
-
-// --- LOGIC THẢ CÂU & HIỂN THỊ CÂU HỎI ---
+// --- THẢ CÂU & ĐỒNG HỒ ĐẾM NGƯỢC ---
 function castHook() {
     const line = document.getElementById("fishingLine");
     const castBtn = document.getElementById("castBtn");
-    const bobber = document.getElementById("bobber");
     castBtn.disabled = true;
     line.classList.add("active");
-    // Di chuyển thuyền nhẹ
-    document.getElementById("fishingBoat").classList.add("translate-x-3");
 
-    // Chọn câu hỏi
     let availableQuestions = questionBank;
     if (currentPlayer.subject !== "all") {
         availableQuestions = questionBank.filter(q => q.subject === currentPlayer.subject);
@@ -61,7 +67,6 @@ function castHook() {
 
     setTimeout(() => {
         line.classList.remove("active");
-        document.getElementById("fishingBoat").classList.remove("translate-x-3");
         showQuestionModal();
         castBtn.disabled = false;
     }, 700);
@@ -75,10 +80,10 @@ function showQuestionModal() {
 
     currentQuestion.options.forEach((opt, idx) => {
         const btn = document.createElement("button");
-        btn.className = "w-full opt-btn flex items-center p-6 rounded-2xl hover:scale-105 active:scale-95";
+        btn.className = "w-full opt-btn flex items-center p-5 rounded-2xl";
         btn.innerHTML = `
-            <div class="opt-btn-label bg-sky-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-extrabold mr-5 shadow">${String.fromCharCode(65 + idx)}</div>
-            <div class="opt-btn-text flex-grow">${opt}</div>
+            <div class="bg-sky-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-extrabold mr-5 shadow">${String.fromCharCode(65 + idx)}</div>
+            <div class="flex-grow font-bold text-gray-800 text-xl">${opt}</div>
         `;
         btn.onclick = () => checkAnswer(idx, btn);
         container.appendChild(btn);
@@ -87,43 +92,68 @@ function showQuestionModal() {
     const modal = document.getElementById("questionModal");
     modal.classList.remove("hidden");
     modal.classList.add("flex");
-    // Thêm hiệu ứng modal
+
     const content = document.getElementById("modalContent");
     setTimeout(() => {
         content.classList.remove("scale-95", "opacity-0");
         content.classList.add("scale-100", "opacity-100");
     }, 50);
+
+    // Bắt đầu đồng hồ đếm ngược (15 giây)
+    startTimer();
+}
+
+function startTimer() {
+    timeLeft = 15;
+    const timerDisplay = document.getElementById("timerDisplay");
+    timerDisplay.innerText = `${timeLeft}s`;
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.innerText = `${timeLeft}s`;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timeOutAnswer();
+        }
+    }, 1000);
+}
+
+function timeOutAnswer() {
+    closeModal();
+    logActivity(`⏰ <b>${currentPlayer.name}</b> đã hết giờ! Cá đã bơi mất.`);
+    alert("Hết giờ mất rồi! Em đã bỏ lỡ cơ hội câu con cá này.");
 }
 
 function checkAnswer(selectedIndex, selectedBtn) {
+    clearInterval(timerInterval); // Dừng đồng hồ
     const modalContent = document.getElementById("modalContent");
     
     if (selectedIndex === currentQuestion.answer) {
-        // --- TRẢ LỜI ĐÚNG (NÂNG CẤP) ---
         modalContent.classList.add("correct-answer-bg");
-        // Hiệu ứng Particle nổ sao (NỔ NGAY TẠI NÚT CHỌN)
-        const btnRect = selectedBtn.getBoundingClientRect();
-        confetti({
-            particleCount: 100, spread: 70, origin: { x: btnRect.x / window.innerWidth, y: btnRect.y / window.innerHeight }
-        });
-
-        // Bắt cá
+        
+        // Chọn ngẫu nhiên loại cá (có tỉ lệ ra cá hiếm/cá to)
         const caught = fishTypes[Math.floor(Math.random() * fishTypes.length)];
         currentPlayer.score += caught.points;
         currentPlayer.caughtFish.push(caught);
         updateScoreDisplay();
-        logActivity(`🎉 <b>${currentPlayer.name}</b> trả lời ĐÚNG và bắt được <b>${caught.name}</b> (+${caught.points}đ)!`);
+        
+        logActivity(`🎉 <b>${currentPlayer.name}</b> trả lời ĐÚNG và câu được <b>${caught.name}</b> (+${caught.points}đ)!`);
         addLeaderboardEntry(currentPlayer.name, currentPlayer.score);
 
-        // Hiệu ứng Cá Bay từ biển lên bể cá
+        // Hiệu ứng đặc biệt nếu câu được cá to / cá hiếm
+        if (caught.rare) {
+            triggerGiantFishEffect(caught.name);
+        } else {
+            triggerConfettiAt(selectedBtn);
+        }
+
         triggerFlyingFishAnimation(caught.icon);
     } else {
-        // --- TRẢ LỜI SAI (NÂNG CẤP) ---
         modalContent.classList.add("wrong-answer-bg");
         logActivity(`❌ <b>${currentPlayer.name}</b> trả lời chưa đúng, cá đã bơi mất!`);
     }
 
-    // Đóng modal sau hiệu ứng
     setTimeout(() => {
         modalContent.classList.remove("correct-answer-bg", "wrong-answer-bg");
         closeModal();
@@ -131,6 +161,7 @@ function checkAnswer(selectedIndex, selectedBtn) {
 }
 
 function closeModal() {
+    clearInterval(timerInterval);
     const modal = document.getElementById("questionModal");
     const content = document.getElementById("modalContent");
     content.classList.add("scale-95", "opacity-0");
@@ -140,14 +171,36 @@ function closeModal() {
     }, 200);
 }
 
-// --- HIỆU ỨNG CÁ BAY TỪ BIỂN LÊN BỂ CÁ ---
+// --- HIỆU ỨNG ĐẶC BIỆT KHI CÂU ĐƯỢC CÁ TO / CÁ HIẾM ---
+function triggerGiantFishEffect(fishName) {
+    // Pháo hoa lớn toàn màn hình
+    confetti({
+        particleCount: 150, spread: 100, origin: { y: 0.6 }
+    });
+
+    // Hiển thị banner vinh danh cá to giữa màn hình
+    const banner = document.createElement("div");
+    banner.className = "giant-fish-banner";
+    banner.innerHTML = `🔥 CÂU ĐƯỢC CÁ KHỔNG LỒ!<br><span class="text-yellow-200 text-3xl">${fishName}</span>`;
+    document.body.appendChild(banner);
+
+    setTimeout(() => banner.remove(), 1500);
+}
+
+function triggerConfettiAt(btn) {
+    const rect = btn.getBoundingClientRect();
+    confetti({
+        particleCount: 80, spread: 60, origin: { x: rect.x / window.innerWidth, y: rect.y / window.innerHeight }
+    });
+}
+
 function triggerFlyingFishAnimation(fishIconClass) {
-    const startPoint = { x: 120, y: 350 }; // Vị trí móc câu
-    const endPoint = { x: window.innerWidth - 60, y: 110 }; // Vị trí bể cá
+    const startPoint = { x: 120, y: 350 };
+    const endPoint = { x: window.innerWidth - 60, y: 110 };
 
     const flyingFish = document.createElement("div");
     flyingFish.className = `flying-fish ${fishIconClass}`;
-    flyingFish.innerHTML = `<i class="fa-solid fa-star-of-life"></i>`; // Particle nhỏ bay kèm
+    flyingFish.innerHTML = `<i class="fa-solid fa-water"></i>`;
     flyingFish.style.left = `${startPoint.x}px`;
     flyingFish.style.top = `${startPoint.y}px`;
     flyingFish.style.transform = 'translate(-50%, -50%) scale(0.2)';
@@ -160,22 +213,15 @@ function triggerFlyingFishAnimation(fishIconClass) {
         flyingFish.style.opacity = 0;
     }, 10);
 
-    setTimeout(() => {
-        flyingFish.remove();
-        // Nhấp nháy bể cá
-        document.querySelector(".fa-bucket").classList.add("animate-pulse", "text-yellow-300");
-        setTimeout(() => document.querySelector(".fa-bucket").classList.remove("animate-pulse", "text-yellow-300"), 500);
-    }, 1000);
+    setTimeout(() => flyingFish.remove(), 1000);
 }
 
-// --- PARTICLE CÁ BƠI ---
 function initFishParticles() {
     const fishSwimGroup = document.getElementById("fishSwimGroup");
     fishSwimGroup.innerHTML = "";
-    const numFish = 6;
     const fishIcons = ["fa-fish text-yellow-100", "fa-fish-fins text-red-300", "fa-shrimp text-pink-200"];
     
-    for (let i = 0; i < numFish; i++) {
+    for (let i = 0; i < 5; i++) {
         const f = document.createElement("div");
         f.className = "fish-particle";
         f.innerHTML = `<i class="fa-solid ${fishIcons[i % fishIcons.length]} text-3xl"></i>`;
@@ -187,11 +233,8 @@ function initFishParticles() {
     }
 }
 
-// --- GIAO DIỆN & BẢNG XẾP HẠNG ---
 function updateScoreDisplay() {
     document.getElementById("displayScore").innerText = `${currentPlayer.score}đ`;
-    document.getElementById("displayScore").classList.add("scale-110");
-    setTimeout(() => document.getElementById("displayScore").classList.remove("scale-110"), 100);
 }
 
 function logActivity(message) {
@@ -215,7 +258,6 @@ function addLeaderboardEntry(name, score) {
     });
 }
 
-// Bể cá
 function openAquarium() {
     const list = document.getElementById("aquariumList");
     list.innerHTML = "";
@@ -226,29 +268,27 @@ function openAquarium() {
             const item = document.createElement("div");
             item.className = `p-4 bg-sky-50 rounded-2xl border-2 ${fish.rare ? 'border-yellow-400 shadow-lg' : 'border-sky-200'} flex flex-col items-center text-center`;
             item.innerHTML = `
-                <i class="fa-solid ${fish.icon} text-5xl mb-3 ${fish.rare ? 'animate-pulse' : ''}"></i>
+                <i class="fa-solid ${fish.icon} text-5xl mb-3 ${fish.rare ? 'animate-bounce' : ''}"></i>
                 <span class="text-xl font-extrabold text-gray-800">${fish.name}</span>
                 <span class="text-lg text-sky-700 font-bold">+${fish.points}đ</span>
             `;
             list.appendChild(item);
         });
     }
-    const modal = document.getElementById("aquariumModal");
-    modal.classList.remove("hidden");
-    modal.classList.add("flex");
+    document.getElementById("aquariumModal").classList.remove("hidden");
+    document.getElementById("aquariumModal").classList.add("flex");
 }
 
 function closeAquarium() { document.getElementById("aquariumModal").classList.add("hidden"); }
 
-// --- TẢI CÂU HỎI TỪ FILE CSV (.csv) ---
+// Đọc file CSV
 function handleFileUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
     document.getElementById("fileNameDisplay").innerText = file.name;
     const reader = new FileReader();
     reader.onload = function(e) {
-        const text = e.target.result;
-        parseCSVQuestions(text);
+        parseCSVQuestions(e.target.result);
     };
     reader.readAsText(file, "UTF-8");
 }
@@ -256,13 +296,12 @@ function handleFileUpload(event) {
 function parseCSVQuestions(csvText) {
     const lines = csvText.split(/\r\n|\n/);
     let loadedCount = 0;
-    // Xóa câu hỏi cũ (Tùy chọn)
-    questionBank.length = 0; 
+    questionBank.length = 0;
 
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
-        const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // Phân tách CSV chuẩn
+        const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
         if (cols.length >= 7) {
             questionBank.push({
                 subject: cols[0].replace(/["']/g, "").trim(),
@@ -273,6 +312,5 @@ function parseCSVQuestions(csvText) {
             loadedCount++;
         }
     }
-    if (loadedCount > 0) { alert(`Đã tải thành công ${loadedCount} câu hỏi từ file của thầy cô!`); }
-    else { alert("Vui lòng kiểm tra lại định dạng file CSV!"); }
+    if (loadedCount > 0) alert(`Đã tải thành công ${loadedCount} câu hỏi mới!`);
 }
