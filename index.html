@@ -3,360 +3,904 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ÔN TẬP CÂU CÁ PRO - PHIÊN BẢN HOÀN CHỈNH</title>
-    <!-- Tailwind CSS -->
+    <title>Ôn Tập Trắc Nghiệm Tin Học 6 - Giữa Kỳ 1</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Confetti & Particle -->
-    <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.12.0/tsparticles.confetti.bundle.min.js"></script>
-    
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root { --text-scale: 1.25; }
-        body { font-size: calc(1rem * var(--text-scale)); font-family: 'Fredoka', sans-serif; }
-        button, input, select { font-size: calc(1.05rem * var(--text-scale)) !important; }
-        .avatar-card.selected { border-color: #0284c7 !important; background-color: #e0f2fe !important; transform: scale(1.05); }
-        .opt-btn { background: #f8fafc; border: 3px solid #e2e8f0; transition: all 0.2s; }
-        .opt-btn:hover { background: #e0f2fe; border-color: #7dd3fc; transform: translateX(8px); }
-        .ocean-wave {
-            position: absolute; bottom: -1px; left: 0; right: 0; height: 30px;
-            background: repeating-linear-gradient(-45deg, rgba(3, 105, 161, 0.4), rgba(3, 105, 161, 0.4) 15px, rgba(2, 132, 199, 0.4) 15px, rgba(2, 132, 199, 0.4) 30px);
-            animation: moveWaves 8s linear infinite; opacity: 0.7;
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
-        @keyframes moveWaves { 0% { transform: translateX(0); } 100% { transform: translateX(100px); } }
-        .fishing-line-new {
-            position: absolute; top: 75px; left: calc(20% + 45px); width: 3px; height: 0px;
-            background: repeating-linear-gradient(to bottom, #fbbf24, #f59e0b 5px);
-            transition: height 0.6s ease-out; border-radius: 3px; z-index: 25;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
         }
-        .fishing-line-new.active { height: 240px; }
-        .fish-particle { position: absolute; animation: swimP 10s ease-in-out infinite; }
-        @keyframes swimP {
-            0% { transform: translate(0) scaleX(1); }
-            50% { transform: translate(200px, 30px) scaleX(1); }
-            51% { transform: translate(200px, 30px) scaleX(-1); }
-            100% { transform: translate(0) scaleX(-1); }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
         }
-        .correct-answer-bg { animation: flashGreen 0.6s ease-out; }
-        .wrong-answer-bg { animation: flashRed 0.6s ease-out; }
-        @keyframes flashGreen { 0%, 100% { background-color: white; } 50% { background-color: #bbf7d0; border-color: #22c55e; } }
-        @keyframes flashRed { 0%, 100% { background-color: white; } 50% { background-color: #fecaca; border-color: #ef4444; } }
-        .flying-fish { position: fixed; font-size: 3.5rem; z-index: 60; transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
     </style>
 </head>
-<body class="bg-blue-50 min-h-screen flex flex-col overflow-x-hidden">
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Header -->
-    <header class="bg-sky-950 text-white shadow-xl p-4 sticky top-0 z-40 border-b-4 border-yellow-400">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <i class="fa-solid fa-fish-fins text-yellow-300 text-4xl animate-bounce"></i>
-                <h1 class="text-2xl md:text-3xl font-extrabold">CÂU CÁ <span class="text-yellow-300">PRO 4.0</span></h1>
+    <!-- Header Navigation -->
+    <header class="bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/20 p-2 rounded-xl backdrop-blur-md">
+                    <i class="fa-solid fa-laptop-code text-2xl text-yellow-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold tracking-wide">ÔN TẬP TIN HỌC 6 - GIỮA KỲ 1</h1>
+                    <p class="text-xs text-sky-100 hidden sm:block">30 Câu hỏi trắc nghiệm phủ rộng 6 bài học trọng tâm</p>
+                </div>
             </div>
-            <div id="globalTimer" class="hidden items-center gap-2 bg-red-600 px-4 py-1.5 rounded-full border-2 border-yellow-300 shadow-md">
-                <i class="fa-solid fa-stopwatch text-yellow-300 text-xl animate-pulse"></i>
-                <span id="globalTimerDisplay" class="font-extrabold text-white text-xl">15:00</span>
-            </div>
-            <div id="userInfo" class="hidden flex items-center gap-3 bg-sky-800 px-4 py-2 rounded-full border border-sky-700">
-                <span id="displayAvatar" class="text-2xl">🥷</span>
-                <span class="font-semibold text-xl text-yellow-100 hidden md:inline" id="displayPlayerName">Học sinh</span>
-                <span class="bg-yellow-400 text-sky-950 px-3 py-0.5 rounded-full font-bold text-2xl" id="displayScore">0đ</span>
-                <button onclick="openAquarium()" class="hover:text-yellow-300"><i class="fa-solid fa-bucket text-2xl"></i></button>
+            <div class="flex items-center space-x-4">
+                <div id="timer-box" class="bg-black/20 px-3 py-1.5 rounded-lg border border-white/20 flex items-center space-x-2 text-sm font-semibold">
+                    <i class="fa-regular fa-clock text-amber-300 animate-pulse"></i>
+                    <span id="timer">10:00</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Main -->
-    <main class="max-w-6xl mx-auto w-full p-4 flex-grow flex flex-col">
-        <!-- Đăng nhập -->
-        <div id="loginScreen" class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center max-w-2xl mx-auto w-full border-4 border-sky-200 mt-4">
-            <h2 class="text-3xl font-extrabold text-sky-950 mb-3">Chọn Nhân Vật & Vào Game!</h2>
-            <form onsubmit="startGame(event)" class="space-y-5 text-left">
-                <div>
-                    <label class="block text-sm font-bold text-sky-700 mb-1">1. Chọn Nhân Vật:</label>
-                    <div class="grid grid-cols-4 gap-3">
-                        <div onclick="selectAvatar('🥷', this)" class="avatar-card selected p-3 rounded-2xl border-4 border-sky-400 bg-sky-50 flex flex-col items-center cursor-pointer text-3xl">🥷<span class="text-xs font-bold mt-1 text-sky-900">Ninja</span></div>
-                        <div onclick="selectAvatar('👦', this)" class="avatar-card p-3 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-3xl">👦<span class="text-xs font-bold mt-1 text-gray-700">Nam</span></div>
-                        <div onclick="selectAvatar('👧', this)" class="avatar-card p-3 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-3xl">👧<span class="text-xs font-bold mt-1 text-gray-700">Nữ</span></div>
-                        <div onclick="selectAvatar('🧙‍♂️', this)" class="avatar-card p-3 rounded-2xl border-4 border-gray-200 bg-white flex flex-col items-center cursor-pointer text-3xl">🧙‍♂️<span class="text-xs font-bold mt-1 text-gray-700">Phù thủy</span></div>
+    <!-- Main Container -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- Sidebar / Question Navigation -->
+        <aside class="lg:col-span-1 order-2 lg:order-1 flex flex-col gap-4">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 sticky top-20">
+                <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center justify-between">
+                    <span>Danh sách câu hỏi</span>
+                    <span id="answered-count" class="text-xs text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full font-semibold">0/30</span>
+                </h2>
+                
+                <!-- Question Grid Map -->
+                <div id="question-grid" class="grid grid-cols-5 gap-2 max-h-[300px] overflow-y-auto custom-scrollbar p-1">
+                    <!-- Javascript will render grid items here -->
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-2 text-xs text-slate-500">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-slate-100 border border-slate-300"></span>
+                        <span>Chưa làm</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-sky-500 text-white"></span>
+                        <span>Đã chọn</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 text-white"></span>
+                        <span>Đúng (khi nộp)</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-rose-500 text-white"></span>
+                        <span>Sai (khi nộp)</span>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-bold text-sky-700 mb-1">2. Nhập Tên:</label>
-                    <input type="text" id="playerNameInput" required placeholder="Họ tên học sinh..." class="w-full px-5 py-3 border-4 border-sky-300 rounded-2xl text-xl font-semibold bg-sky-50">
-                </div>
-                <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-300 text-sky-950 font-extrabold py-4 rounded-2xl shadow-xl text-2xl">BẮT ĐẦU THI ĐẤU (15 PHÚT)</button>
-            </form>
-        </div>
 
-        <!-- Màn hình Game -->
-        <div id="gameScreen" class="hidden flex-col gap-5">
-            <div class="relative bg-gradient-to-b from-sky-300 via-teal-400 to-blue-700 rounded-3xl h-96 shadow-2xl overflow-hidden border-8 border-white">
-                <div class="ocean-wave"></div>
-                <div id="fishingBoat" class="absolute top-10 left-[20%] z-20 transition-all duration-200">
-                    <div class="flex flex-col items-center">
-                        <span id="boatAvatar" class="text-6xl">🥷</span>
-                        <div class="bg-amber-800 w-24 h-4 rounded-full border-2 border-amber-900"></div>
-                        <div class="bg-amber-900/60 w-16 h-16 rounded-md -mt-1"></div>
+                <!-- Submit Button -->
+                <button id="btn-submit" onclick="confirmSubmit()" class="mt-5 w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all duration-200 transform active:scale-95 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>NỘP BÀI THI</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Question Content Area -->
+        <section class="lg:col-span-3 order-1 lg:order-2 flex flex-col gap-4">
+            
+            <!-- Progress Bar -->
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+                <div class="flex justify-between items-center text-xs font-semibold text-slate-500 mb-2">
+                    <span id="progress-text">Tiến độ bài làm: 0%</span>
+                    <span id="topic-badge" class="bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-md font-medium">Chủ đề: Tất cả</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-sky-500 to-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Main Card -->
+            <div id="quiz-card" class="bg-white rounded-2xl p-5 md:p-8 shadow-sm border border-slate-200/80 flex-1 flex flex-col justify-between">
+                <div>
+                    <!-- Question Header -->
+                    <div class="flex justify-between items-start gap-4 mb-4">
+                        <span id="question-number" class="text-xs font-bold text-sky-600 bg-sky-100 px-3 py-1 rounded-full uppercase tracking-wider">Câu 1 / 30</span>
+                        <span id="question-topic" class="text-xs text-slate-400 font-medium italic">Bài 1: Thông tin & Dữ liệu</span>
+                    </div>
+
+                    <!-- Question Text -->
+                    <h2 id="question-text" class="text-base md:text-lg font-bold text-slate-800 leading-relaxed mb-6">
+                        Đang tải câu hỏi...
+                    </h2>
+
+                    <!-- Options Container -->
+                    <div id="options-container" class="space-y-3">
+                        <!-- Options will be generated by JS -->
+                    </div>
+
+                    <!-- Explanation Box (Initially Hidden) -->
+                    <div id="explanation-box" class="hidden mt-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm">
+                        <div class="font-bold flex items-center space-x-2 mb-1 text-amber-800">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                            <span>Giải thích chi tiết:</span>
+                        </div>
+                        <p id="explanation-text" class="leading-relaxed"></p>
                     </div>
                 </div>
-                <div id="fishingLine" class="fishing-line-new"></div>
-                <div id="fishSwimGroup" class="absolute inset-0 z-10 opacity-60"></div>
 
-                <!-- Điều khiển di chuyển -->
-                <div class="absolute bottom-4 left-4 z-30 flex gap-2">
-                    <button onclick="movePlayer(-1)" class="bg-sky-800 text-white font-bold w-12 h-12 rounded-full text-xl border-2 border-white flex items-center justify-center">◀</button>
-                    <button onclick="movePlayer(1)" class="bg-sky-800 text-white font-bold w-12 h-12 rounded-full text-xl border-2 border-white flex items-center justify-center">▶</button>
-                </div>
+                <!-- Footer Action Buttons -->
+                <div class="mt-8 pt-4 border-t border-slate-100 flex justify-between items-center gap-3">
+                    <button id="btn-prev" onclick="prevQuestion()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2">
+                        <i class="fa-solid fa-chevron-left"></i>
+                        <span>Câu trước</span>
+                    </button>
 
-                <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30">
-                    <button id="castBtn" onclick="castHook()" class="bg-red-500 hover:bg-red-400 text-white font-extrabold py-4 px-8 rounded-full shadow-3xl border-6 border-white text-3xl flex items-center gap-3">
-                        <i class="fa-solid fa-fish text-yellow-300"></i> THẢ CÂU NGAY!
+                    <button id="btn-next" onclick="nextQuestion()" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl text-sm transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                        <span>Câu tiếp</span>
+                        <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
-
-                <div class="absolute top-4 right-4 z-30">
-                    <button onclick="openChatbot()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2 rounded-2xl shadow-xl border-2 border-white text-lg">🤖 Trợ Lý AI</button>
-                </div>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div class="bg-sky-950 text-white rounded-2xl p-5 shadow-xl border-4 border-sky-800">
-                    <h3 class="text-yellow-300 font-bold text-xl mb-3">📢 Hoạt động lớp học</h3>
-                    <div id="activityLog" class="space-y-2 h-36 overflow-y-auto text-sm text-sky-200"></div>
-                </div>
-                <div class="bg-sky-950 text-white rounded-2xl p-5 shadow-xl border-4 border-sky-800">
-                    <h3 class="text-yellow-300 font-bold text-xl mb-3">🏆 Bảng Vàng Xếp Hạng</h3>
-                    <div id="leaderboard" class="space-y-2 h-36 overflow-y-auto text-base"></div>
-                </div>
-            </div>
-        </div>
+        </section>
     </main>
 
-    <!-- Modal Câu hỏi -->
-    <div id="questionModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div id="modalContent" class="bg-white rounded-3xl max-w-xl w-full p-7 shadow-3xl border-8 border-yellow-400 relative">
-            <div class="absolute top-4 right-6 bg-red-100 px-3 py-1 rounded-full border-2 border-red-400 font-bold text-red-600 text-lg" id="timerDisplay">15s</div>
-            <h3 id="questionText" class="text-2xl font-extrabold text-gray-900 mb-6">Câu hỏi ôn tập?</h3>
-            <div id="answersContainer" class="space-y-3"></div>
-        </div>
-    </div>
-
-    <!-- Modal Chatbot AI -->
-    <div id="chatbotModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-3xl border-4 border-purple-500 flex flex-col h-[450px]">
-            <div class="flex justify-between items-center pb-3 border-b">
-                <h3 class="text-xl font-bold text-purple-900">🤖 Trợ Lý AI Ôn Tập</h3>
-                <button onclick="closeChatbot()" class="text-gray-400 hover:text-red-500 text-2xl">&times;</button>
+    <!-- Modal Results Popup -->
+    <div id="result-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-white/20 transform transition-all duration-300 scale-95 opacity-0" id="result-modal-content">
+            
+            <div class="w-20 h-20 bg-gradient-to-tr from-amber-400 to-yellow-300 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg text-white text-3xl">
+                <i class="fa-solid fa-trophy animate-bounce"></i>
             </div>
-            <div id="chatMessages" class="flex-grow overflow-y-auto p-3 space-y-2 text-sm my-2 bg-purple-50 rounded-2xl">
-                <div class="bg-purple-600 text-white p-3 rounded-2xl max-w-[85%]">👋 Chào em! Em cần hỏi gì về bài học cứ nhắn cho tôi nhé!</div>
+
+            <h3 class="text-2xl font-bold text-slate-800 mb-1">Kết Quả Bài Thi</h3>
+            <p class="text-xs text-slate-500 mb-4">Chúc mừng em đã hoàn thành bài kiểm tra ôn tập!</p>
+
+            <div class="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100">
+                <div class="text-4xl font-extrabold text-sky-600 mb-1"><span id="final-score">0.0</span> <span class="text-lg text-slate-400 font-normal">/ 10</span></div>
+                <div class="text-sm font-semibold text-slate-600 mb-3" id="score-text">Đúng 0 / 30 câu</div>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-emerald-50 text-emerald-700 p-2 rounded-lg font-medium">
+                        <i class="fa-solid fa-circle-check mr-1"></i> Số câu đúng: <b id="correct-count">0</b>
+                    </div>
+                    <div class="bg-rose-50 text-rose-700 p-2 rounded-lg font-medium">
+                        <i class="fa-solid fa-circle-xmark mr-1"></i> Số câu sai: <b id="wrong-count">0</b>
+                    </div>
+                </div>
             </div>
-            <div class="flex gap-2 pt-2 border-t">
-                <input type="text" id="chatInput" placeholder="Nhập câu hỏi..." class="flex-grow px-4 py-2 border-2 border-purple-200 rounded-xl text-sm">
-                <button onclick="sendChatMessage()" class="bg-purple-600 text-white px-4 py-2 rounded-xl font-bold">Gửi</button>
+
+            <div class="space-y-2">
+                <button onclick="reviewAnswers()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl transition-all shadow-md">
+                    <i class="fa-solid fa-magnifying-glass mr-2"></i>Xem Đáp Án & Giải Thích
+                </button>
+                <button onclick="restartQuiz()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-xl transition-all">
+                    <i class="fa-solid fa-rotate-right mr-2"></i>Làm Lại Bài Thi
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Bể cá -->
-    <div id="aquariumModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-3xl border-8 border-sky-400">
-            <div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-bold text-sky-950">🐠 Bể Cá Của Tôi</h3><button onclick="closeAquarium()" class="text-2xl">&times;</button></div>
-            <div id="aquariumList" class="grid grid-cols-3 gap-3 max-h-72 overflow-y-auto"></div>
+    <!-- Confirm Submit Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 text-center shadow-xl border border-slate-100">
+            <div class="text-amber-500 text-4xl mb-3">
+                <i class="fa-solid fa-circle-question"></i>
+            </div>
+            <h4 class="text-lg font-bold text-slate-800 mb-2">Bạn có chắc muốn nộp bài?</h4>
+            <p id="unanswered-warning" class="text-xs text-slate-500 mb-5">Bạn còn câu hỏi chưa trả lời!</p>
+            <div class="flex space-x-3">
+                <button onclick="closeConfirmModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm">Làm tiếp</button>
+                <button onclick="submitQuiz()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm">Xác nhận nộp</button>
+            </div>
         </div>
     </div>
 
-    <!-- Modal Hết giờ -->
-    <div id="gameOverModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-yellow-50 rounded-3xl max-w-md w-full p-8 text-center border-8 border-yellow-500">
-            <h2 class="text-3xl font-black text-amber-900 mb-4">🏆 HẾT GIỜ THI ĐẤU!</h2>
-            <div id="podiumList" class="space-y-2 mb-6 text-lg font-bold"></div>
-            <button onclick="location.reload()" class="bg-yellow-500 text-amber-950 font-extrabold py-3 px-8 rounded-2xl text-xl">CHƠI LẠI</button>
-        </div>
-    </div>
-
-    <div id="fishAnimationContainer" class="fixed inset-0 pointer-events-none z-50"></div>
-
-    <!-- Script tích hợp gọn gàng -->
+    <!-- Data & Script -->
     <script>
-        const questionBank = [
-            { question: "Trong Python, câu lệnh xuất dữ liệu là gì?", options: ["input()", "print()", "export()", "write()"], answer: 1 },
-            { question: "Kết quả: 15 + 5 * 2 = ?", options: ["40", "25", "30", "35"], answer: 1 },
-            { question: "Thiết bị nào là thiết bị vào (Input)?", options: ["Màn hình", "Máy in", "Bàn phím", "Loa"], answer: 2 }
+        // 30 Quiz Questions covering Lessons 1-6
+        const questionsData = [
+            // BÀI 1: THÔNG TIN VÀ DỮ LIỆU
+            {
+                id: 1,
+                topic: "Bài 1: Thông tin & Dữ liệu",
+                question: "Vật mang tin là gì?",
+                options: [
+                    "A. Là thiết bị dùng để kết nối mạng Internet.",
+                    "B. Là cảm xúc, suy nghĩ của con người chưa được ghi lại.",
+                    "C. Là vật mang hoặc chứa dữ liệu (như sách, thẻ nhớ, đĩa CD, tờ giấy).",
+                    "D. Là các thiết bị phần cứng bên trong thùng máy tính."
+                ],
+                correct: 2,
+                explain: "Vật mang tin là vật mang hoặc chứa dữ liệu dưới dạng văn bản, hình ảnh, âm thanh (ví dụ: tờ giấy, sách, thẻ nhớ, đĩa CD...)."
+            },
+            {
+                id: 2,
+                topic: "Bài 1: Thông tin & Dữ liệu",
+                question: "Khẳng định nào sau đây là ĐÚNG khi nói về 'Dữ liệu'?",
+                options: [
+                    "A. Dữ liệu là những hiểu biết con người thu nhận được.",
+                    "B. Dữ liệu là các con số, văn bản, hình ảnh, âm thanh được ghi lại trên vật mang tin.",
+                    "C. Dữ liệu là ý nghĩa sâu xa của thông tin.",
+                    "D. Dữ liệu chỉ bao gồm các con số dùng để tính toán toán học."
+                ],
+                correct: 1,
+                explain: "Dữ liệu là dạng biểu diễn của thông tin được ghi lại trên vật mang tin dưới dạng chữ viết, con số, hình ảnh, âm thanh."
+            },
+            {
+                id: 3,
+                topic: "Bài 1: Thông tin & Dữ liệu",
+                question: "Khi em đọc một cuốn sách giáo khoa Tin học 6, hình ảnh và dòng chữ in trên trang sách đóng vai trò là:",
+                options: [
+                    "A. Thông tin.",
+                    "B. Dữ liệu.",
+                    "C. Vật mang tin.",
+                    "D. Vật xử lý thông tin."
+                ],
+                correct: 1,
+                explain: "Chữ viết và hình ảnh in trên giấy là Dữ liệu. Tờ giấy sách là Vật mang tin, còn sự hiểu biết em thu nhận được sau khi đọc mới là Thông tin."
+            },
+
+            // BÀI 2: XỬ LÝ THÔNG TIN
+            {
+                id: 4,
+                topic: "Bài 2: Xử lý thông tin",
+                question: "Các bước cơ bản trong quá trình xử lý thông tin bao gồm:",
+                options: [
+                    "A. Mở máy → Gõ văn bản → In ra giấy → Tắt máy.",
+                    "B. Kết nối mạng → Tìm kiếm → Tải về → Lưu trữ.",
+                    "C. Thu nhận → Lưu trữ → Xử lý → Truyền thông tin.",
+                    "D. Nhập dữ liệu → Quét virus → Cài phần mềm → Tắt nguồn."
+                ],
+                correct: 2,
+                explain: "Quá trình xử lý thông tin gồm 4 bước cơ bản tuần tự: Thu nhận thông tin ➔ Lưu trữ ➔ Xử lý thông tin ➔ Truyền thông tin."
+            },
+            {
+                id: 5,
+                topic: "Bài 2: Xử lý thông tin",
+                question: "Trong các thiết bị máy tính sau, thiết bị nào thuộc nhóm 'Thiết bị RA' (Output)?",
+                options: [
+                    "A. Bàn phím.",
+                    "B. Chuột máy tính.",
+                    "C. Màn hình.",
+                    "D. Máy quét (Scanner)."
+                ],
+                correct: 2,
+                explain: "Màn hình, máy in, loa là các thiết bị RA (xuất kết quả cho người dùng). Bàn phím, chuột, máy quét là thiết bị VÀO."
+            },
+            {
+                id: 6,
+                topic: "Bài 2: Xử lý thông tin",
+                question: "Trong các thiết bị sau, thiết bị nào là 'Thiết bị VÀO' (Input) của máy tính?",
+                options: [
+                    "A. Máy in.",
+                    "B. Bàn phím.",
+                    "C. Màn hình.",
+                    "D. Loa."
+                ],
+                correct: 1,
+                explain: "Bàn phím giúp người dùng nhập dữ liệu văn bản và câu lệnh vào máy tính nên là thiết bị Vào."
+            },
+
+            // BÀI 3: BIỂU DIỄN VÀ ĐO LƯỜNG THÔNG TIN
+            {
+                id: 7,
+                topic: "Bài 3: Biểu diễn & Đo lường thông tin",
+                question: "Dữ liệu và thông tin trong máy tính được biểu diễn bằng hai kí hiệu nào?",
+                options: [
+                    "A. Các chữ cái từ A đến Z.",
+                    "B. Các con số từ 0 đến 9.",
+                    "C. Hai kí hiệu 0 và 1.",
+                    "D. Các dấu cộng, trừ, nhân, chia."
+                ],
+                correct: 2,
+                explain: "Máy tính chỉ sử dụng hệ nhị phân gồm hai kí hiệu 0 và 1 để biểu diễn toàn bộ dữ liệu (chữ, số, ảnh, âm thanh)."
+            },
+            {
+                id: 8,
+                topic: "Bài 3: Biểu diễn & Đo lường thông tin",
+                question: "Đơn vị NHỎ NHẤT dùng để đo lượng thông tin trong máy tính là gì?",
+                options: [
+                    "A. Byte.",
+                    "B. Bit.",
+                    "C. KB (Kilobyte).",
+                    "D. MB (Megabyte)."
+                ],
+                correct: 1,
+                explain: "Bit là đơn vị nhỏ nhất dùng để đo lượng thông tin trong máy tính. Mỗi bit nhận một trong hai giá trị là 0 hoặc 1."
+            },
+            {
+                id: 9,
+                topic: "Bài 3: Biểu diễn & Đo lường thông tin",
+                question: "Khẳng định nào sau đây là ĐÚNG về quy đổi đơn vị đo dung lượng thông tin?",
+                options: [
+                    "A. 1 Byte = 10 Bit.",
+                    "B. 1 KB = 1000 Byte.",
+                    "C. 1 GB = 1024 MB.",
+                    "D. 1 MB = 1000 KB."
+                ],
+                correct: 2,
+                explain: "Theo quy ước chuẩn trong Tin học, 1 GB (Gigabyte) = 1024 MB (Megabyte)."
+            },
+            {
+                id: 10,
+                topic: "Bài 3: Biểu diễn & Đo lường thông tin",
+                question: "Một tệp văn bản có kích thước là 3 KB. Kích thước của tệp đó tính theo đơn vị Byte là bao nhiêu?",
+                options: [
+                    "A. 3000 Byte.",
+                    "B. 3072 Byte.",
+                    "C. 300 Byte.",
+                    "D. 24 Byte."
+                ],
+                correct: 1,
+                explain: "Vì 1 KB = 1024 Byte, nên 3 KB = 3 x 1024 = 3072 Byte."
+            },
+            {
+                id: 11,
+                topic: "Bài 3: Biểu diễn & Đo lường thông tin",
+                question: "Cho các đơn vị đo lượng thông tin: Bit, Byte, KB, MB, GB. Đơn vị nào có giá trị LỚN NHẤT trong số này?",
+                options: [
+                    "A. Bit.",
+                    "B. Byte.",
+                    "C. MB.",
+                    "D. GB."
+                ],
+                correct: 3,
+                explain: "Thứ tự sắp xếp từ nhỏ đến lớn: Bit < Byte < KB < MB < GB."
+            },
+            {
+                id: 12,
+                topic: "Bài 3: Biểu diễn & Đo lường thông tin",
+                question: "Phát biểu nào sau đây SAI khi nói về Bit?",
+                options: [
+                    "A. Bit là viết tắt của Binary Digit.",
+                    "B. Bit có thể nhận một trong hai trạng thái 0 hoặc 1.",
+                    "C. Bit là đơn vị lớn nhất dùng để đo lượng thông tin.",
+                    "D. Một Byte gồm 8 Bit."
+                ],
+                correct: 2,
+                explain: "Bit là đơn vị NHỎ NHẤT dùng để đo dung lượng thông tin, không phải đơn vị lớn nhất."
+            },
+
+            // BÀI 4: MẠNG MÁY TÍNH
+            {
+                id: 13,
+                topic: "Bài 4: Mạng máy tính",
+                question: "Các thành phần cơ bản của một mạng máy tính bao gồm:",
+                options: [
+                    "A. Bàn phím, chuột, màn hình.",
+                    "B. Máy chủ, máy trạm, máy in.",
+                    "C. Cáp quang, cáp đồng, sóng Wi-Fi.",
+                    "D. Thiết bị đầu cuối, thiết bị kết nối, phần mềm mạng."
+                ],
+                correct: 3,
+                explain: "Một mạng máy tính gồm 3 thành phần chính: 1) Các thiết bị đầu cuối, 2) Các thiết bị kết nối, 3) Phần mềm mạng."
+            },
+            {
+                id: 14,
+                topic: "Bài 4: Mạng máy tính",
+                question: "Thành phần nào sau đây thuộc nhóm 'Thiết bị đầu cuối' trong mạng máy tính?",
+                options: [
+                    "A. Cáp mạng.",
+                    "B. Router Wi-Fi.",
+                    "C. Máy tính xách tay và điện thoại di động.",
+                    "D. Bộ chia mạng (Switch)."
+                ],
+                correct: 2,
+                explain: "Máy tính xách tay, máy tính để bàn, điện thoại, máy in... là các thiết bị gửi/nhận dữ liệu nên gọi là Thiết bị đầu cuối."
+            },
+            {
+                id: 15,
+                topic: "Bài 4: Mạng máy tính",
+                question: "Để thuận tiện di chuyển laptop từ phòng học ra sân vườn mà vẫn duy trì kết nối Internet, em nên chọn loại kết nối nào?",
+                options: [
+                    "A. Kết nối có dây dùng cáp Ethernet ngắn.",
+                    "B. Kết nối không dây (Wi-Fi).",
+                    "C. Kết nối bằng dây cáp quang.",
+                    "D. Không thể kết nối được ở ngoài sân vườn."
+                ],
+                correct: 1,
+                explain: "Kết nối không dây (Wi-Fi) linh hoạt, không bị vướng vớ dây cáp giúp di chuyển thiết bị dễ dàng trong phạm vi phủ sóng."
+            },
+            {
+                id: 16,
+                topic: "Bài 4: Mạng máy tính",
+                question: "Ưu điểm nổi bật nhất của mạng có dây so với mạng không dây là gì?",
+                options: [
+                    "A. Dễ dàng di chuyển thiết bị kết nối.",
+                    "B. Không cần sử dụng bất kỳ dây cáp nào.",
+                    "C. Truyền tín hiệu ổn định và tốc độ truyền cao hơn.",
+                    "D. Thi công lắp đặt dễ dàng và linh hoạt hơn."
+                ],
+                correct: 2,
+                explain: "Mạng có dây sử dụng dây cáp nên tính ổn định cao, ít bị nhiễu và tốc độ truyền tải nhanh, đặn hơn."
+            },
+
+            // BÀI 5: INTERNET VÀ ỨNG DỤNG
+            {
+                id: 17,
+                topic: "Bài 5: Internet",
+                question: "Hành động nào sau đây thể hiện rõ nhất lợi ích của Internet trong hỗ trợ HỌC TẬP?",
+                options: [
+                    "A. Chơi game trực tuyến cùng bạn bè cả buổi tối.",
+                    "B. Tìm kiếm tài liệu và xem video bài giảng trên trang web giáo dục.",
+                    "C. Tải phim hành động về máy tính để xem lúc rảnh rỗi.",
+                    "D. Nhắn tin tán chuyện riêng trong giờ học."
+                ],
+                correct: 1,
+                explain: "Tra cứu tài liệu, học trực tuyến và xem các bài giảng bổ trợ là ứng dụng tiêu biểu của Internet cho học tập."
+            },
+            {
+                id: 18,
+                topic: "Bài 5: Internet",
+                question: "Hành động nào sau đây thể hiện lợi ích của Internet đối với nhu cầu GIẢI TRÍ?",
+                options: [
+                    "A. Tìm kiếm thông tin lịch sử Óc Eo.",
+                    "B. Gửi bài tập qua Email cho thầy cô.",
+                    "C. Chơi trò chơi trực tuyến hoặc nghe nhạc trực tuyến.",
+                    "D. Đăng ký khóa học trực tuyến."
+                ],
+                correct: 2,
+                explain: "Chơi game, nghe nhạc, xem phim giải trí trực tuyến là các hoạt động giải trí lành mạnh trên Internet."
+            },
+            {
+                id: 19,
+                topic: "Bài 5: Internet",
+                question: "Khi mưa to không thể gặp mặt trực tiếp, nhóm học sinh có thể dùng ứng dụng nào trên Internet để thảo luận và gửi tài liệu bài tập cho nhau?",
+                options: [
+                    "A. Microsoft Word hoặc Paint.",
+                    "B. Zalo, Messenger, Gmail hoặc Google Drive.",
+                    "C. Unikey hoặc Windows Media Player.",
+                    "D. Calculator hoặc Notepad."
+                ],
+                correct: 1,
+                explain: "Zalo, Messenger, Gmail, Google Drive là các công cụ giao tiếp và chia sẻ tài liệu từ xa phổ biến trên mạng Internet."
+            },
+            {
+                id: 20,
+                topic: "Bài 5: Internet",
+                question: "Internet là mạng kết nối:",
+                options: [
+                    "A. Các máy tính trong cùng một phòng học.",
+                    "B. Các máy tính trong cùng một tòa nhà.",
+                    "C. Hàng triệu máy tính trên toàn cầu.",
+                    "D. Chỉ các máy tính ở các trường đại học."
+                ],
+                correct: 2,
+                explain: "Internet là mạng toàn cầu kết nối hàng triệu máy tính và thiết bị trên khắp thế giới."
+            },
+
+            // BÀI 6: TRÌNH DUYỆT WEB VÀ WEBSITE
+            {
+                id: 21,
+                topic: "Bài 6: Trình duyệt web & Website",
+                question: "Phần mềm nào sau đây là 'Trình duyệt Web' dùng để truy cập thông tin trên Internet?",
+                options: [
+                    "A. Microsoft Word.",
+                    "B. Google Chrome.",
+                    "C. Unikey.",
+                    "D. Windows Media Player."
+                ],
+                correct: 1,
+                explain: "Google Chrome, Cốc Cốc, Microsoft Edge, Safari là các trình duyệt web phổ biến."
+            },
+            {
+                id: 22,
+                topic: "Bài 6: Trình duyệt web & Website",
+                question: "WWW là từ viết tắt của thuật ngữ nào?",
+                options: [
+                    "A. Wide World Web.",
+                    "B. World Web Wide.",
+                    "C. World Wide Web.",
+                    "D. Web World Wide."
+                ],
+                correct: 2,
+                explain: "WWW là viết tắt của cụm từ 'World Wide Web' (Mạng lưới thông tin toàn cầu)."
+            },
+            {
+                id: 23,
+                topic: "Bài 6: Trình duyệt web & Website",
+                question: "Khi truy cập vào một Website, trang đầu tiên xuất hiện trên màn hình được gọi là gì?",
+                options: [
+                    "A. Trang chủ (Homepage).",
+                    "B. Trang phụ.",
+                    "C. Trang siêu liên kết.",
+                    "D. Trang tìm kiếm."
+                ],
+                correct: 0,
+                explain: "Trang đầu tiên mở ra khi truy cập vào một website chính là Trang chủ (Homepage)."
+            },
+            {
+                id: 24,
+                topic: "Bài 6: Trình duyệt web & Website",
+                question: "Các trang web trong cùng một website được kết nối liên kết với nhau thông qua yếu tố nào?",
+                options: [
+                    "A. Cáp mạng Ethernet.",
+                    "B. Các Siêu liên kết (Hyperlink).",
+                    "C. Bộ xử lý trung tâm (CPU).",
+                    "D. Dây nguồn điện."
+                ],
+                correct: 1,
+                explain: "Siêu liên kết (Hyperlink) là văn bản/hình ảnh chứa đường dẫn giúp chuyển từ trang web này sang trang web khác."
+            },
+            {
+                id: 25,
+                topic: "Bài 6: Trình duyệt web & Website",
+                question: "Phát biểu nào sau đây là ĐÚNG về địa chỉ Website?",
+                options: [
+                    "A. Nhiều website khác nhau có thể dùng chung một địa chỉ giống hệt nhau.",
+                    "B. Mỗi website có một địa chỉ riêng biệt và duy nhất trên Internet.",
+                    "C. Địa chỉ website bắt buộc chỉ chứa toàn các con số.",
+                    "D. Website không cần địa chỉ vẫn truy cập bình thường."
+                ],
+                correct: 1,
+                explain: "Mỗi website đều có một địa chỉ URL duy nhất trên thế giới để phân biệt và truy cập đúng (ví dụ: angiang.gov.vn)."
+            },
+            {
+                id: 26,
+                topic: "Bài 6: Trình duyệt web & Website",
+                question: "Để mở trang web cổng thông tin An Giang có địa chỉ `angiang.gov.vn`, em cần gõ địa chỉ này vào vị trí nào trên trình duyệt?",
+                options: [
+                    "A. Khung tìm kiếm của Google.",
+                    "B. Thanh địa chỉ (Address Bar) của trình duyệt web.",
+                    "C. Nhắn vào khung hội thoại Zalo.",
+                    "D. Thanh tiêu đề cửa sổ màn hình desktop."
+                ],
+                correct: 1,
+                explain: "Để mở trực tiếp một trang web khi đã biết địa chỉ cụ thể, ta gõ vào Thanh địa chỉ (Address Bar) của trình duyệt."
+            },
+            {
+                id: 27,
+                topic: "Bài 6: Trình duyệt web & Website",
+                question: "Để tìm kiếm thông tin về di tích lịch sử 'Óc Eo An Giang', từ khóa nào sau đây là phù hợp nhất?",
+                options: [
+                    "A. Di tich Oc Eo An Giang",
+                    "B. An Giang co gi vui",
+                    "C. Lịch sử Việt Nam phong kiến",
+                    "D. Cac di tich o Viet Nam"
+                ],
+                correct: 0,
+                explain: "Từ khóa chính xác, ngắn gọn và chứa cụm từ 'Di tích Óc Eo An Giang' sẽ cho kết quả tìm kiếm đúng nhất."
+            },
+            {
+                id: 28,
+                topic: "Bài 6: Trình duyệt web & Website",
+                question: "Website có tên miền đuôi `.gov.vn` (như `angiang.gov.vn`) là trang web của cơ quan nào?",
+                options: [
+                    "A. Công ty doanh nghiệp tư nhân.",
+                    "B. Tổ chức giáo dục tiểu học.",
+                    "C. Cơ quan nhà nước chính thống Việt Nam.",
+                    "D. Trang game giải trí trực tuyến."
+                ],
+                correct: 2,
+                explain: "Tên miền `.gov.vn` dành riêng cho các Cơ quan chính quyền Nhà nước Việt Nam (Government), do đó thông tin rất chính xác và đáng tin cậy."
+            },
+
+            // TỔNG HỢP VẬN DỤNG & THỰC TẾ
+            {
+                id: 29,
+                topic: "Tổng hợp: Tìm kiếm & Đánh giá nguồn tin",
+                question: "Khi thu thập thông tin trên Internet cho bài báo cáo học tập, em nên làm gì để đảm bảo thông tin đáng tin cậy?",
+                options: [
+                    "A. Lấy thông tin ở trang web đầu tiên tìm thấy mà không cần đọc kỹ.",
+                    "B. So sánh thông tin từ nhiều nguồn chính thống (.gov.vn, báo chính thống, SGK).",
+                    "C. Tin tưởng hoàn toàn vào bài đăng cá nhân trên mạng xã hội.",
+                    "D. Chọn thông tin có nhiều lượt thích (like) nhất."
+                ],
+                correct: 1,
+                explain: "Cần kiểm chứng thông tin bằng cách so sánh nhiều nguồn chính thống tin cậy như cổng thông tin chính phủ, sách giáo khoa..."
+            },
+            {
+                id: 30,
+                topic: "Tổng hợp: Thiết bị & Xử lý thông tin",
+                question: "Bộ phận nào của máy tính thực hiện chức năng 'Xử lý thông tin'?",
+                options: [
+                    "A. Màn hình.",
+                    "B. Bàn phím.",
+                    "C. Bộ xử lý trung tâm (CPU).",
+                    "D. Ô đĩa cứng."
+                ],
+                correct: 2,
+                explain: "Bộ xử lý trung tâm CPU (Central Processing Unit) được coi là bộ não của máy tính, đảm nhận nhiệm vụ xử lý thông tin."
+            }
         ];
 
-        const fishTypes = [
-            { name: "Cá Chép Vàng", points: 10, icon: "fa-fish text-yellow-400", rare: false },
-            { name: "Cá Nemo", points: 15, icon: "fa-fish-fins text-orange-500", rare: false },
-            { name: "Cá Mập Săn Mồi", points: 50, icon: "fa-fish-fins text-slate-700", rare: true }
-        ];
+        // State variables
+        let currentIndex = 0;
+        let userAnswers = new Array(questionsData.length).fill(null);
+        let isSubmitted = false;
+        let timerInterval;
+        let timeLeft = 10 * 60; // 10 minutes in seconds
 
-        let currentPlayer = { name: "", avatar: "🥷", score: 0, caughtFish: [] };
-        let currentQuestion = null;
-        let localScores = {};
-        let timerInterval = null, timeLeft = 15;
-        let globalTimeLeft = 15 * 60, globalTimerInterval = null;
-        let boatPosition = 20;
+        // Initialize App
+        window.onload = function() {
+            renderGridNav();
+            loadQuestion(0);
+            startTimer();
+        };
 
-        function selectAvatar(emoji, el) {
-            currentPlayer.avatar = emoji;
-            document.querySelectorAll(".avatar-card").forEach(c => c.classList.remove("selected", "border-sky-400", "bg-sky-50"));
-            el.classList.add("selected", "border-sky-400", "bg-sky-50");
-        }
+        // Render Sidebar Grid Navigation
+        function renderGridNav() {
+            const gridContainer = document.getElementById("question-grid");
+            gridContainer.innerHTML = "";
 
-        function startGame(e) {
-            e.preventDefault();
-            const name = document.getElementById("playerNameInput").value.trim();
-            if (!name) return;
-            currentPlayer.name = name;
-            document.getElementById("loginScreen").classList.add("hidden");
-            document.getElementById("gameScreen").classList.remove("hidden");
-            document.getElementById("gameScreen").classList.add("flex");
-            document.getElementById("userInfo").classList.remove("hidden");
-            document.getElementById("userInfo").classList.add("flex");
-            document.getElementById("globalTimer").classList.remove("hidden");
-            document.getElementById("globalTimer").classList.add("flex");
-
-            document.getElementById("displayPlayerName").innerText = name;
-            document.getElementById("displayAvatar").innerText = currentPlayer.avatar;
-            document.getElementById("boatAvatar").innerText = currentPlayer.avatar;
-
-            updateScore();
-            addLeaderboard(name, 0);
-            startGlobalTimer();
-        }
-
-        function movePlayer(dir) {
-            boatPosition += dir * 8;
-            if (boatPosition < 5) boatPosition = 5;
-            if (boatPosition > 80) boatPosition = 80;
-            document.getElementById("fishingBoat").style.left = `${boatPosition}%`;
-            document.getElementById("fishingLine").style.left = `calc(${boatPosition}% + 45px)`;
-        }
-
-        function startGlobalTimer() {
-            globalTimerInterval = setInterval(() => {
-                globalTimeLeft--;
-                let m = Math.floor(globalTimeLeft / 60), s = globalTimeLeft % 60;
-                document.getElementById("globalTimerDisplay").innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                if (globalTimeLeft <= 0) { clearInterval(globalTimerInterval); showGameOver(); }
-            }, 1000);
-        }
-
-        function showGameOver() {
-            document.getElementById("gameScreen").classList.add("hidden");
-            document.getElementById("gameOverModal").classList.remove("hidden");
-            const podium = document.getElementById("podiumList");
-            podium.innerHTML = "";
-            Object.entries(localScores).sort((a,b)=>b[1]-a[1]).slice(0,3).forEach(([n,s],i)=>{
-                podium.innerHTML += `<div>🥇 #${i+1} ${n} - ${s} điểm</div>`;
+            questionsData.forEach((q, idx) => {
+                const btn = document.createElement("button");
+                btn.id = `grid-btn-${idx}`;
+                btn.className = `h-9 rounded-xl font-bold text-xs flex items-center justify-center transition-all duration-150 border border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200`;
+                btn.innerText = idx + 1;
+                btn.onclick = () => jumpToQuestion(idx);
+                gridContainer.appendChild(btn);
             });
         }
 
-        function castHook() {
-            const line = document.getElementById("fishingLine");
-            const btn = document.getElementById("castBtn");
-            btn.disabled = true;
-            line.classList.add("active");
+        // Update Grid Item Styles
+        function updateGridStyle() {
+            questionsData.forEach((_, idx) => {
+                const btn = document.getElementById(`grid-btn-${idx}`);
+                if (!btn) return;
 
-            currentQuestion = questionBank[Math.floor(Math.random() * questionBank.length)];
+                // Reset base class
+                btn.className = "h-9 rounded-xl font-bold text-xs flex items-center justify-center transition-all duration-150 border ";
 
-            setTimeout(() => {
-                line.classList.remove("active");
-                showQuestionModal();
-                btn.disabled = false;
-            }, 600);
+                if (isSubmitted) {
+                    // Submitted state: Show Correct / Wrong
+                    const userAns = userAnswers[idx];
+                    const correctAns = questionsData[idx].correct;
+                    if (userAns === correctAns) {
+                        btn.classList.add("bg-emerald-500", "text-white", "border-emerald-600");
+                    } else if (userAns !== null) {
+                        btn.classList.add("bg-rose-500", "text-white", "border-rose-600");
+                    } else {
+                        btn.classList.add("bg-slate-300", "text-slate-600", "border-slate-400");
+                    }
+                } else {
+                    // Active & Selected status
+                    if (userAnswers[idx] !== null) {
+                        btn.classList.add("bg-sky-500", "text-white", "border-sky-600", "shadow-sm");
+                    } else {
+                        btn.classList.add("bg-slate-100", "text-slate-600", "border-slate-200", "hover:bg-slate-200");
+                    }
+                }
+
+                // Current highlight ring
+                if (idx === currentIndex) {
+                    btn.classList.add("ring-2", "ring-indigo-500", "ring-offset-1");
+                }
+            });
+
+            // Update answered count
+            const answered = userAnswers.filter(a => a !== null).length;
+            document.getElementById("answered-count").innerText = `${answered}/${questionsData.length}`;
+            
+            // Progress bar update
+            const progressPct = Math.round((answered / questionsData.length) * 100);
+            document.getElementById("progress-bar").style.width = `${progressPct}%`;
+            document.getElementById("progress-text").innerText = `Tiến độ bài làm: ${progressPct}%`;
         }
 
-        function showQuestionModal() {
-            document.getElementById("questionText").innerText = currentQuestion.question;
-            const container = document.getElementById("answersContainer");
+        // Load Question Content
+        function loadQuestion(index) {
+            currentIndex = index;
+            const q = questionsData[index];
+
+            // Render Meta Info
+            document.getElementById("question-number").innerText = `Câu ${index + 1} / ${questionsData.length}`;
+            document.getElementById("question-topic").innerText = q.topic;
+            document.getElementById("question-text").innerText = q.question;
+
+            // Render Options
+            const container = document.getElementById("options-container");
             container.innerHTML = "";
 
-            currentQuestion.options.forEach((opt, idx) => {
-                const btn = document.createElement("button");
-                btn.className = "w-full opt-btn flex items-center p-3.5 rounded-2xl font-bold text-lg text-gray-800";
-                btn.innerHTML = `<div class="bg-sky-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">${String.fromCharCode(65+idx)}</div> ${opt}`;
-                btn.onclick = () => checkAnswer(idx, btn);
-                container.appendChild(btn);
+            q.options.forEach((optText, optIdx) => {
+                const optBtn = document.createElement("button");
+                optBtn.className = getOptionStyle(optIdx);
+                optBtn.onclick = () => selectOption(optIdx);
+
+                // Checkbox / Radio Circle Icon
+                let iconHtml = `<div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center mr-3 shrink-0"></div>`;
+                
+                if (userAnswers[index] === optIdx) {
+                    iconHtml = `<div class="w-5 h-5 rounded-full bg-sky-500 text-white flex items-center justify-center mr-3 shrink-0 text-xs"><i class="fa-solid fa-check"></i></div>`;
+                }
+
+                if (isSubmitted) {
+                    if (optIdx === q.correct) {
+                        iconHtml = `<div class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center mr-3 shrink-0 text-xs"><i class="fa-solid fa-check"></i></div>`;
+                    } else if (userAnswers[index] === optIdx && optIdx !== q.correct) {
+                        iconHtml = `<div class="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center mr-3 shrink-0 text-xs"><i class="fa-solid fa-xmark"></i></div>`;
+                    }
+                }
+
+                optBtn.innerHTML = `${iconHtml}<span class="text-left font-medium text-slate-700 leading-snug">${optText}</span>`;
+                container.appendChild(optBtn);
             });
 
-            document.getElementById("questionModal").classList.remove("hidden");
-            startTimer();
+            // Explanation box handling
+            const expBox = document.getElementById("explanation-box");
+            if (isSubmitted) {
+                expBox.classList.remove("hidden");
+                document.getElementById("explanation-text").innerText = q.explain;
+            } else {
+                expBox.classList.add("hidden");
+            }
+
+            // Button States
+            document.getElementById("btn-prev").disabled = (index === 0);
+            document.getElementById("btn-next").innerText = (index === questionsData.length - 1) ? "Xem lại" : "Câu tiếp";
+
+            updateGridStyle();
         }
 
+        // Get Styling for Option Items
+        function getOptionStyle(optIdx) {
+            const base = "w-full p-3.5 rounded-xl border text-sm flex items-center transition-all duration-200 text-left cursor-pointer ";
+            
+            if (isSubmitted) {
+                const correct = questionsData[currentIndex].correct;
+                const userChoice = userAnswers[currentIndex];
+
+                if (optIdx === correct) {
+                    return base + "bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold shadow-sm";
+                }
+                if (optIdx === userChoice && userChoice !== correct) {
+                    return base + "bg-rose-50 border-rose-400 text-rose-900 font-semibold";
+                }
+                return base + "bg-slate-50 border-slate-200 opacity-60 cursor-default";
+            }
+
+            if (userAnswers[currentIndex] === optIdx) {
+                return base + "bg-sky-50 border-sky-500 text-sky-900 font-semibold shadow-sm ring-1 ring-sky-300";
+            }
+
+            return base + "bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700";
+        }
+
+        // Option Click Selection
+        function selectOption(optIdx) {
+            if (isSubmitted) return; // Lock if submitted
+            userAnswers[currentIndex] = optIdx;
+            loadQuestion(currentIndex);
+        }
+
+        // Navigation functions
+        function nextQuestion() {
+            if (currentIndex < questionsData.length - 1) {
+                loadQuestion(currentIndex + 1);
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                loadQuestion(currentIndex - 1);
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            loadQuestion(idx);
+        }
+
+        // Timer
         function startTimer() {
-            timeLeft = 15;
-            document.getElementById("timerDisplay").innerText = `${timeLeft}s`;
-            clearInterval(timerInterval);
             timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                    return;
+                }
                 timeLeft--;
-                document.getElementById("timerDisplay").innerText = `${timeLeft}s`;
-                if (timeLeft <= 0) { clearInterval(timerInterval); closeModal(); logActivity(`⏰ ${currentPlayer.name} hết giờ!`); }
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById("timer").innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             }, 1000);
         }
 
-        function checkAnswer(idx, btn) {
-            clearInterval(timerInterval);
-            const content = document.getElementById("modalContent");
-            if (idx === currentQuestion.answer) {
-                content.classList.add("correct-answer-bg");
-                const caught = fishTypes[Math.floor(Math.random()*fishTypes.length)];
-                currentPlayer.score += caught.points;
-                currentPlayer.caughtFish.push(caught);
-                updateScore();
-                logActivity(`🎉 ${currentPlayer.name} câu được ${caught.name} (+${caught.points}đ)!`);
-                addLeaderboard(currentPlayer.name, currentPlayer.score);
-                if(caught.rare) confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+        // Confirm Submit Popup
+        function confirmSubmit() {
+            if (isSubmitted) return;
+
+            const unanswered = userAnswers.filter(a => a === null).length;
+            const warningEl = document.getElementById("unanswered-warning");
+
+            if (unanswered > 0) {
+                warningEl.innerText = `Lưu ý: Bạn còn ${unanswered} câu chưa trả lời!`;
+                warningEl.className = "text-xs font-semibold text-rose-500 mb-5";
             } else {
-                content.classList.add("wrong-answer-bg");
-                logActivity(`❌ ${currentPlayer.name} trả lời sai, cá sổng!`);
+                warningEl.innerText = "Bạn đã hoàn thành tất cả câu hỏi.";
+                warningEl.className = "text-xs font-semibold text-emerald-600 mb-5";
             }
-            setTimeout(() => {
-                content.classList.remove("correct-answer-bg", "wrong-answer-bg");
-                closeModal();
-            }, 800);
+
+            document.getElementById("confirm-modal").classList.remove("hidden");
         }
 
-        function closeModal() {
+        function closeConfirmModal() {
+            document.getElementById("confirm-modal").classList.add("hidden");
+        }
+
+        // Submit Quiz & Calculate Score
+        function submitQuiz() {
+            closeConfirmModal();
+            isSubmitted = true;
             clearInterval(timerInterval);
-            document.getElementById("questionModal").classList.add("hidden");
+
+            let correctCount = 0;
+            questionsData.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            const wrongCount = questionsData.length - correctCount;
+            const finalScore = ((correctCount / questionsData.length) * 10).toFixed(1);
+
+            // Update UI elements
+            document.getElementById("final-score").innerText = finalScore;
+            document.getElementById("score-text").innerText = `Đúng ${correctCount} / ${questionsData.length} câu`;
+            document.getElementById("correct-count").innerText = correctCount;
+            document.getElementById("wrong-count").innerText = wrongCount;
+
+            // Hide Submit button, update layout
+            document.getElementById("btn-submit").style.display = "none";
+
+            // Show Result Modal
+            const modal = document.getElementById("result-modal");
+            const modalContent = document.getElementById("result-modal-content");
+            modal.classList.remove("hidden");
+            setTimeout(() => {
+                modalContent.classList.remove("scale-95", "opacity-0");
+                modalContent.classList.add("scale-100", "opacity-100");
+            }, 50);
+
+            // Reload view
+            loadQuestion(currentIndex);
         }
 
-        function updateScore() { document.getElementById("displayScore").innerText = `${currentPlayer.score}đ`; }
-        function logActivity(msg) {
-            const log = document.getElementById("activityLog");
-            log.innerHTML = `<div class="p-2 bg-sky-900 rounded">${msg}</div>` + log.innerHTML;
+        // Review Answers from modal
+        function reviewAnswers() {
+            const modal = document.getElementById("result-modal");
+            modal.classList.add("hidden");
+            loadQuestion(0);
         }
-        function addLeaderboard(name, score) {
-            localScores[name] = Math.max(localScores[name] || 0, score);
-            const board = document.getElementById("leaderboard");
-            board.innerHTML = "";
-            Object.entries(localScores).sort((a,b)=>b[1]-a[1]).forEach(([n,s],i)=>{
-                board.innerHTML += `<div class="flex justify-between p-1.5 bg-sky-900 rounded"><span>#${i+1} ${n}</span><b>${s}đ</b></div>`;
-            });
+
+        // Restart Quiz
+        function restartQuiz() {
+            isSubmitted = false;
+            userAnswers = new Array(questionsData.length).fill(null);
+            timeLeft = 10 * 60;
+            document.getElementById("result-modal").classList.add("hidden");
+            document.getElementById("btn-submit").style.display = "flex";
+            
+            clearInterval(timerInterval);
+            startTimer();
+            renderGridNav();
+            loadQuestion(0);
         }
-        function openChatbot() { document.getElementById("chatbotModal").classList.remove("hidden"); }
-        function closeChatbot() { document.getElementById("chatbotModal").classList.add("hidden"); }
-        function sendChatMessage() {
-            const input = document.getElementById("chatInput");
-            if(!input.value.trim()) return;
-            document.getElementById("chatMessages").innerHTML += `<div class="bg-purple-100 p-2 rounded ml-auto max-w-[80%]">${input.value}</div>`;
-            input.value = "";
-            setTimeout(() => {
-                document.getElementById("chatMessages").innerHTML += `<div class="bg-purple-600 text-white p-2 rounded max-w-[80%]">🤖 Chúc em chơi vui và ôn tập thật tốt nhé!</div>`;
-            }, 600);
-        }
-        function openAquarium() {
-            const list = document.getElementById("aquariumList");
-            list.innerHTML = currentPlayer.caughtFish.length ? "" : "<p class='col-span-3 text-center text-gray-400'>Trống</p>";
-            currentPlayer.caughtFish.forEach(f => {
-                list.innerHTML += `<div class="p-2 bg-sky-50 rounded border text-center"><i class='fa-solid ${f.icon} text-3xl mb-1'></i><br><b>${f.name}</b></div>`;
-            });
-            document.getElementById("aquariumModal").classList.remove("hidden");
-        }
-        function closeAquarium() { document.getElementById("aquariumModal").classList.add("hidden"); }
     </script>
 </body>
 </html>
